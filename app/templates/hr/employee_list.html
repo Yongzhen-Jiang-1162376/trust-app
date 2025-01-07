@@ -1,0 +1,111 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h3>Employees</h3>
+<row>
+
+</row>
+<table id="employee_table" style="border: 1px solid gray;"></table>
+{% endblock %}
+
+{% block scripts %}
+<script>
+//define some sample data
+let tabledata = [
+    {id:1, name:"Oli Bob", age:"12", col:"red", dob:""},
+    {id:2, name:"Mary May", age:"1", col:"blue", dob:"14/05/1982"},
+    {id:3, name:"Christine Lobowski", age:"42", col:"green", dob:"22/05/1982"},
+    {id:4, name:"Brendon Philips", age:"125", col:"orange", dob:"01/08/1980"},
+    {id:5, name:"Margret Marmajuke", age:"16", col:"yellow", dob:"31/01/1999"},
+];
+
+let rowActions = function(cell, formatterParams, onRendered) {
+    const row = cell.getRow();
+    const actionsDiv = document.createElement("div");
+
+    const fileButton = document.createElement("button")
+    fileButton.innerText = "Documents"
+    fileButton.onclick = function() {
+        alert("documents")
+    }
+    actionsDiv.appendChild(fileButton)
+
+    const editButton = document.createElement("button")
+    editButton.innerText = "Edit"
+    editButton.onclick = function() {
+        alert("Edit")
+    }
+    actionsDiv.appendChild(editButton)
+
+    return actionsDiv
+}
+
+let rowNumberFormatter = function(cell, formatterParams, onRendered) {
+    return cell.getRow().getPosition();
+}
+
+
+//create Tabulator on DOM element with id "example-table"
+let table = new Tabulator("#employee_table", {
+    minHeight: "700px", // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+    data:`{{ data | tojson }}`, //assign data to table
+    layout:"fitColumns", //fit columns to width of table (optional)
+    pagination: "local",
+    paginationSize: 6,
+    paginationSizeSelector: [3, 6, 8, 10],
+    paginationCounter: "rows",
+    rowHeader: {
+        headerSort: false,
+        resizable: false,
+        width: 50,
+        frozen: true,
+        headerHozAlign: "center",
+        hozAlign: "center",
+        formatter: "rowSelection",
+        titleFormatter: "rowSelection",
+        cellClick: function(e, cell) {
+            cell.getRow().toggleSelect()
+        }
+    },
+    columns:[ //Define Table Columns
+        {title:"No.", field:"rownum", width:80, formatter:rowNumberFormatter},
+        {title:"InternalId", field:"id", width:100, visible: false},
+        {title:"Full Name", field:"full_name", width:150},
+        {title:"Gender", field:"gender", width:100},
+        {title:"Position", field:"position", width:150},
+        {title:"Portfolio Assigned", field:"portfolio_assigned", width:300},
+        {title:"Manager Name", field:"manager_name", width:150},
+        {title:"Employee Type", field:"employee_type", width:150},
+        {title:"Mode of Work", field:"mode_of_work", width:150},
+        {title:"Date of Birth", field:"date_of_birth", width:150},
+        {title:"Nationality", field:"nationality", width:150},
+        {title:"Email", field:"email", width:200},
+        {title:"Contact Detail", field:"contact_detail", width:200},
+        {title:"Address", field:"address", width:250},
+        {title:"Start Date", field:"start_date", width:150},
+        {title:"Resignation Date", field:"resignation_date", width:200},
+        {title:"Last Working Day", field:"last_working_date", width:200},
+        {title:"Trial Period", field:"trial_period", width:150},
+        {title:"Trial Period Start Date", field:"trial_period_start_date", width:250},
+        {title:"Hour per Week", field:"hours_per_week", width:150},
+        {title:"Volunteer Status", field:"volunteer_current_status", width:200},
+        {title:"Feedback & Review", field:"feeback_performance_review", width:300},
+        {title:"Leave Reason Id", field:"leave_reason_id", width:150},
+        {title:"Leave Reason", field:"leave_reason", width:200},
+        {title:"Comments", field:"comments", width:300},
+        {
+            title: 'Actions',
+            field: 'actions',
+            formatter: rowActions,
+            width: 200,
+            align: 'center',
+            frozen: true
+        },
+    ],
+});
+
+//trigger an alert message when the row is clicked
+
+
+</script>
+{% endblock %}
