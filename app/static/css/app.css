@@ -51,7 +51,7 @@
   background-color: #37533C;
 }
 
-table.dataTable {
+/* table.dataTable {
   width: 100% !important;
 }
 
@@ -63,4 +63,15 @@ table.dataTable td {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+} */
+
+/* Offcanvas */
+.custom-offcanvas-responsive {
+  width: 80% !important;
+}
+
+@media (min-width: 768px) {
+  .custom-offcanvas-responsive {
+    width: 40% !important;
+  }
 }

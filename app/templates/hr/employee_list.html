@@ -2,11 +2,69 @@
 
 {% block content %}
 <h3>Employees</h3>
-<row>
 
-</row>
+<div class="d-flex justify-content-between mb-1 mt-4">
+    <div class="d-flex">
+        <button type="button" class="btn btn-success btn-sm">Add new</button>
+    </div>
+    <div class="d-flex">
+        <button type="button" class="btn btn-danger btn-sm">Delete</button>
+        <button type="button" class="btn btn-secondary btn-sm ms-2">Export</button>
+    </div>
+</div>
+
+
 <table id="employee_table" style="border: 1px solid gray;"></table>
+
+
+<!-- offcanvas for files display -->
+<div class="offcanvas offcanvas-start custom-offcanvas-responsive" tabindex="-1" id="offcanvasLeft" aria-labelledby="offcanvasBottomLabel">
+  <div class="offcanvas-header">
+    <!-- <h5 class="offcanvas-title" id="offcanvasBottomLabel">Offcanvas bottom</h5> -->
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body small">
+    <div class="container my-4">
+        <h4>File List</h4>
+        <ul class="list-group">
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <i class="bi bi-file-earmark"></i> Document.pdf
+            </span>
+            <div>
+              <button class="btn btn-sm btn-primary me-2">Download</button>
+              <button class="btn btn-sm btn-danger">Delete</button>
+            </div>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <i class="bi bi-file-earmark-word"></i> Report.docx
+            </span>
+            <div>
+              <button class="btn btn-sm btn-primary me-2">Download</button>
+              <button class="btn btn-sm btn-danger">Delete</button>
+            </div>
+          </li>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <i class="bi bi-file-earmark-excel"></i> Data.xlsx
+            </span>
+            <div>
+              <button class="btn btn-sm btn-primary me-2">Download</button>
+              <button class="btn btn-sm btn-danger">Delete</button>
+            </div>
+          </li>
+        </ul>
+      </div>
+  </div>
+</div>
+
+
 {% endblock %}
+
+
+
+
 
 {% block scripts %}
 <script>
@@ -20,22 +78,30 @@ let tabledata = [
 ];
 
 let rowActions = function(cell, formatterParams, onRendered) {
+
     const row = cell.getRow();
     const actionsDiv = document.createElement("div");
 
-    const fileButton = document.createElement("button")
-    fileButton.innerText = "Documents"
-    fileButton.onclick = function() {
-        alert("documents")
-    }
-    actionsDiv.appendChild(fileButton)
-
     const editButton = document.createElement("button")
+    editButton.type = "button"
     editButton.innerText = "Edit"
+    editButton.className = "btn btn-info btn-sm ms-2"
     editButton.onclick = function() {
         alert("Edit")
     }
     actionsDiv.appendChild(editButton)
+
+    const fileButton = document.createElement("button")
+    fileButton.innerText = "Documents"
+    fileButton.type = "button"
+    fileButton.className = "btn btn-warning btn-sm ms-2"
+    fileButton.setAttribute("data-bs-toggle", "offcanvas")
+    fileButton.setAttribute("data-bs-target", "#offcanvasLeft")
+    fileButton.setAttribute("aria-controls", "offcanvasLeft")
+    fileButton.onclick = function() {
+        alert('documents')
+    }
+    actionsDiv.appendChild(fileButton)
 
     return actionsDiv
 }
@@ -97,7 +163,7 @@ let table = new Tabulator("#employee_table", {
             title: 'Actions',
             field: 'actions',
             formatter: rowActions,
-            width: 200,
+            width: 165,
             align: 'center',
             frozen: true
         },
