@@ -1,6 +1,6 @@
 from flask import render_template, request, jsonify
 from app.blueprints.hr import bp
-from app.models.employee.employee import Employee, LeaveReason
+from app.models.employee import Employee, LeaveReason
 from app.schemas.employee import EmployeeSchema
 from sqlalchemy import select, text
 from app.extensions import db
