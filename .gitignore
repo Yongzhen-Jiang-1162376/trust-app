@@ -36,3 +36,6 @@ apps/static/assets/.temp
 
 migrations
 
+# upload
+upload
+uploads
