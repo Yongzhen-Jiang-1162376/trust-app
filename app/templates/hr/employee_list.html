@@ -71,6 +71,9 @@
         <!-- <h4>Profile Edit</h4> -->
         <form>
           <div class="mb-3">
+            <input type="hidden" class="form-control" id="id" name="id">
+          </div>
+          <div class="mb-3">
             <label for="full_name" class="form-label">Full Name</label>
             <input type="text" class="form-control" id="full_name" name="full_name">
           </div>
@@ -110,7 +113,7 @@
           </div>
           <div class="mb-3">
             <label for="date_of_birth" class="form-label">Date of Birth</label>
-            <input type="date" class="form-control" id="date_of_birth" name="date_of_birth" lang="en-NZ">
+            <input type="date" class="form-control datepicker" id="date_of_birth" name="date_of_birth" lang="en-NZ">
           </div>
           <div class="mb-3">
             <label for="nationality" class="form-label">Nationality</label>
@@ -130,15 +133,15 @@
           </div>
           <div class="mb-3">
             <label for="start_date" class="form-label">Start Date</label>
-            <input type="date" class="form-control" id="start_date" name="start_date" lang="en-NZ">
+            <input type="date" class="form-control datepicker" id="start_date" name="start_date" lang="en-NZ">
           </div>
           <div class="mb-3">
             <label for="resignation_date" class="form-label">Resignation Date</label>
-            <input type="date" class="form-control" id="resignation_date" name="resignation_date" lang="en-NZ">
+            <input type="date" class="form-control datepicker" id="resignation_date" name="resignation_date" lang="en-NZ">
           </div>
           <div class="mb-3">
-            <label for="last_working_date" class="form-label">Last Working Day</label>
-            <input type="text" class="form-control" id="last_working_date" name="last_working_date">
+            <label for="last_working_date" class="form-label">Last Working Date</label>
+            <input type="text" class="form-control datepicker" id="last_working_date" name="last_working_date">
           </div>
           <div class="mb-3">
             <label for="trial_period" class="form-label">Trial Period</label>
@@ -146,7 +149,7 @@
           </div>
           <div class="mb-3">
             <label for="trial_period_start_date" class="form-label">Trial Period Start Day</label>
-            <input type="text" class="form-control" id="trial_period_start_date" name="trial_period_start_date">
+            <input type="text" class="form-control datepicker" id="trial_period_start_date" name="trial_period_start_date">
           </div>
           <div class="mb-3">
             <label for="hours_per_week" class="form-label">Hours per Week</label>
@@ -186,7 +189,15 @@
 
 
 {% block scripts %}
+
 <script>
+
+flatpickr(".datepicker", {
+    dateFormat: "d/M/Y", // Set New Zealand date format
+    allowInput: false // Allow manual input
+});
+
+
 // define some sample data
 // let tabledata = [
 //    {id:1, name:"Oli Bob", age:"12", col:"red", dob:""},
@@ -197,6 +208,7 @@
 // ];
 
 let populateEditForm = function(rowData) {
+  document.getElementById('id').value = rowData.id
   document.getElementById('full_name').value = rowData.full_name
   document.getElementById('gender').value = rowData.gender
   document.getElementById('position').value = rowData.position
@@ -217,7 +229,7 @@ let populateEditForm = function(rowData) {
   document.getElementById('hours_per_week').value = rowData.hours_per_week
   document.getElementById('volunteer_current_status').value = rowData.volunteer_current_status
   document.getElementById('feedback_performance_review').value = rowData.feedback_performance_review
-  document.getElementById('leave_reason').value = rowData.leave_reason
+  document.getElementById('leave_reason').value = rowData.leave_reason_id
   document.getElementById('comments').value = rowData.comments
 }
 
@@ -305,7 +317,7 @@ let table = new Tabulator("#employee_table", {
         {title:"Hours per Week", field:"hours_per_week", width:150},
         {title:"Volunteer Status", field:"volunteer_current_status", width:200},
         {title:"Feedback & Review", field:"feedback_performance_review", width:300},
-        {title:"Leave Reason Id", field:"leave_reason_id", width:150},
+        {title:"Leave Reason Id", field:"leave_reason_id", width:150, visible: false},
         {title:"Leave Reason", field:"leave_reason", width:200},
         {title:"Comments", field:"comments", width:300},
         {

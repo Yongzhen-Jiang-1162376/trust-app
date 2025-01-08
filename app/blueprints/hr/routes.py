@@ -2,7 +2,7 @@ from flask import render_template, request, jsonify
 from app.blueprints.hr import bp
 from app.models.employee.employee import Employee, LeaveReason
 from app.schemas.employee import EmployeeSchema
-from sqlalchemy import select
+from sqlalchemy import select, text
 from app.extensions import db
 from pprint import pprint
 
@@ -109,44 +109,77 @@ def employee_list():
         }
     ]
     
-    stmt = select(
-        Employee.id,
-        Employee.full_name,
-        Employee.gender,
-        Employee.position,
-        Employee.portfolio_assigned,
-        Employee.manager_name,
-        Employee.employee_type,
-        Employee.mode_of_work,
-        Employee.date_of_birth,
-        Employee.nationality,
-        Employee.email,
-        Employee.contact_detail,
-        Employee.address,
-        Employee.start_date,
-        Employee.resignation_date,
-        Employee.last_working_date,
-        Employee.trial_period,
-        Employee.trial_period_start_date,
-        Employee.hours_per_week,
-        Employee.volunteer_current_status,
-        Employee.feedback_performance_review,
-        Employee.leave_reason_id,
-        LeaveReason.reason,
-        Employee.comments
-    ).join(LeaveReason, Employee.leave_reason_id == LeaveReason.id)
+    # stmt = select(
+    #     Employee.id,
+    #     Employee.full_name,
+    #     Employee.gender,
+    #     Employee.position,
+    #     Employee.portfolio_assigned,
+    #     Employee.manager_name,
+    #     Employee.employee_type,
+    #     Employee.mode_of_work,
+    #     Employee.date_of_birth,
+    #     Employee.nationality,
+    #     Employee.email,
+    #     Employee.contact_detail,
+    #     Employee.address,
+    #     Employee.start_date,
+    #     Employee.resignation_date,
+    #     Employee.last_working_date,
+    #     Employee.trial_period,
+    #     Employee.trial_period_start_date,
+    #     Employee.hours_per_week,
+    #     Employee.volunteer_current_status,
+    #     Employee.feedback_performance_review,
+    #     Employee.leave_reason_id,
+    #     LeaveReason.reason,
+    #     Employee.comments
+    # ).join(LeaveReason, Employee.leave_reason_id == LeaveReason.id)
+
+
+    sql = '''
+        SELECT
+            e.id,
+            e.full_name,
+            e.gender,
+            e.position,
+            e.portfolio_assigned,
+            e.manager_name,
+            e.employee_type,
+            e.mode_of_work,
+            e.date_of_birth,
+            e.nationality,
+            e.email,
+            e.contact_detail,
+            e.address,
+            e.start_date,
+            e.resignation_date,
+            e.last_working_date,
+            e.trial_period,
+            e.trial_period_start_date,
+            e.hours_per_week,
+            e.volunteer_current_status,
+            e.feedback_performance_review,
+            e.leave_reason_id,
+            l.reason as leave_reason,
+            e.comments
+        FROM hr_employee e
+        LEFT JOIN hr_leave_reason l ON e.leave_reason_id = l.id
+    '''
     
-    result = db.session.execute(stmt).all()
+    result = db.session.execute(text(sql)).fetchall()
+
+    pprint(result)
     
     employee_schema = EmployeeSchema(many=True)
-    
+
     result_json = employee_schema.dump(result)
-    
+
     # [pprint(row) for row in result]
     
     # data = [dict(row) for row in result]
     
-    pprint(columns)
-    pprint(result_json)
+    # pprint(columns)
+    pprint(result_json[0])
     
     return render_template('hr/employee_list.html', columns=columns, data=result_json)

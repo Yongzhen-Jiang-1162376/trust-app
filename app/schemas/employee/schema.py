@@ -23,7 +23,8 @@ class EmployeeSchema(Schema):
     resignation_date = fields.Date()
     last_working_date = fields.Date()
     feedback_performance_review = fields.Str()
-    leave_reason = fields.Nested('LeaveReasonSchema', dump_only=True)
+    leave_reason_id = fields.Int()
+    leave_reason = fields.Str()
     comments = fields.Str()
 
 
