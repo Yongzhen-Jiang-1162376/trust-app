@@ -72,7 +72,7 @@ table.dataTable td {
 
 @media (min-width: 768px) {
   .custom-offcanvas-responsive {
-    width: 40% !important;
+    width: 50% !important;
   }
 }
 

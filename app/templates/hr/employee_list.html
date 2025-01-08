@@ -20,16 +20,16 @@
 <!-- offcanvas for files display -->
 <div class="offcanvas offcanvas-start custom-offcanvas-responsive" data-bs-backdrop="static" tabindex="-1" id="offcanvasFiles" aria-labelledby="offcanvasBottomLabel">
   <div class="offcanvas-header">
-    <!-- <h5 class="offcanvas-title" id="offcanvasBottomLabel">Offcanvas bottom</h5> -->
+    <h6 class="offcanvas-title" id="offcanvasFilesLabel">Document List</h6>
     <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
   <div class="offcanvas-body small">
     <div class="container my-4">
-        <h4>File List</h4>
+        <!-- <h5>File List</h5> -->
         <ul class="list-group">
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span>
-              <i class="bi bi-file-earmark"></i> Document.pdf
+              Document.pdf
             </span>
             <div>
               <button class="btn btn-sm btn-primary me-2">Download</button>
@@ -38,7 +38,7 @@
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span>
-              <i class="bi bi-file-earmark-word"></i> Report.docx
+              Report.docx
             </span>
             <div>
               <button class="btn btn-sm btn-primary me-2">Download</button>
@@ -47,7 +47,7 @@
           </li>
           <li class="list-group-item d-flex justify-content-between align-items-center">
             <span>
-              <i class="bi bi-file-earmark-excel"></i> Data.xlsx
+              Data.xlsx
             </span>
             <div>
               <button class="btn btn-sm btn-primary me-2">Download</button>
@@ -56,7 +56,14 @@
           </li>
         </ul>
 
+        <h6 class="mt-5 mb-1">Upload Documents</h6>
         <form action="/api/upload-employee-documents" class="dropzone" id="my-dropzone" enctype="multipart/form-data"></form>
+
+        <div id="uploadAlertPlaceHolder"></div>
+
+        <!-- <div class="alert alert-success mt-5" role="alert">
+          A simple success alert—check it out!
+        </div> -->
 
       </div>
   </div>
@@ -274,10 +281,24 @@ let rowNumberFormatter = function(cell, formatterParams, onRendered) {
     return cell.getRow().getPosition();
 }
 
+const alertPlaceHolder = document.getElementById('uploadAlertPlaceHolder')
+let appendAlert = (message, type) => {
+  const wrapper = document.createElement('div')
+  wrapper.innerHTML = [
+    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+    `   <div>${message}</div>`,
+    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+    '</div>'
+  ].join('')
+
+  document.getElementById('uploadAlertPlaceHolder').append(wrapper)
+}
+
+
 
 //create Tabulator on DOM element with id "example-table"
 let table = new Tabulator("#employee_table", {
-    minHeight: "700px", // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+    minHeight: "650px", // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
     data:`{{ data | tojson }}`, //assign data to table
     layout:"fitColumns", //fit columns to width of table (optional)
     pagination: "local",
@@ -361,11 +382,12 @@ Dropzone.options.myDropzone = {
 
     this.on('error', function(file, response) {
       this.removeAllFiles(true)
-      console.error(response)
+      appendAlert(response.message, 'danger')
     })
 
     this.on('queuecomplete', function() {
       this.removeAllFiles(true)
+      appendAlert('Documents uploaded successfully.', 'success');
     })
   }
 }
