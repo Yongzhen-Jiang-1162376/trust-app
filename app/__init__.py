@@ -33,6 +33,9 @@ def create_app(test_config=None):
     
     from app.blueprints.hr import bp as hr_bp
     app.register_blueprint(hr_bp)
+
+    from app.blueprints.api import bp as api_bp
+    app.register_blueprint(api_bp)
     
     
     with app.app_context():
