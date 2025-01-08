@@ -216,7 +216,10 @@ let populateEditForm = function(rowData) {
   document.getElementById('manager_name').value = rowData.manager_name
   document.getElementById('employee_type').value = rowData.employee_type
   document.getElementById('mode_of_work').value = rowData.mode_of_work
-  document.getElementById('date_of_birth').value = rowData.date_of_birth
+  // document.getElementById('date_of_birth').setDate(rowData.date_of_birth)
+
+  flatpickr('#date_of_birth', {dateFormat: 'd/m/Y'}).setDate(date(rowData.date_of_birth))
+
   document.getElementById('nationality').value = rowData.nationality
   document.getElementById('email').value = rowData.email
   document.getElementById('contact_detail').value = rowData.contact_detail
@@ -304,16 +307,31 @@ let table = new Tabulator("#employee_table", {
         {title:"Manager Name", field:"manager_name", width:150},
         {title:"Employee Type", field:"employee_type", width:150},
         {title:"Mode of Work", field:"mode_of_work", width:150},
-        {title:"Date of Birth", field:"date_of_birth", width:150},
+        {title:"Date of Birth", field:"date_of_birth", width:150, formatter:"datetime", formatterParams:{
+          inputFormat:"yyyy-MM-dd",
+          outputFormat:"dd/MMM/yyyy"
+        }},
         {title:"Nationality", field:"nationality", width:150},
         {title:"Email", field:"email", width:200},
         {title:"Contact Detail", field:"contact_detail", width:200},
         {title:"Address", field:"address", width:250},
-        {title:"Start Date", field:"start_date", width:150},
-        {title:"Resignation Date", field:"resignation_date", width:200},
-        {title:"Last Working Day", field:"last_working_date", width:200},
+        {title:"Start Date", field:"start_date", width:150, formatter:"datetime", formatterParams:{
+          inputFormat:"yyyy-MM-dd",
+          outputFormat:"dd/MMM/yyyy"
+        }},
+        {title:"Resignation Date", field:"resignation_date", width:200, formatter:"datetime", formatterParams:{
+          inputFormat:"yyyy-MM-dd",
+          outputFormat:"dd/MMM/yyyy"
+        }},
+        {title:"Last Working Day", field:"last_working_date", width:200, formatter:"datetime", formatterParams:{
+          inputFormat:"yyyy-MM-dd",
+          outputFormat:"dd/MMM/yyyy"
+        }},
         {title:"Trial Period", field:"trial_period", width:150},
-        {title:"Trial Period Start Date", field:"trial_period_start_date", width:250},
+        {title:"Trial Period Start Date", field:"trial_period_start_date", width:250, formatter:"datetime", formatterParams:{
+          inputFormat:"yyyy-MM-dd",
+          outputFormat:"dd/MMM/yyyy"
+        }},
         {title:"Hours per Week", field:"hours_per_week", width:150},
         {title:"Volunteer Status", field:"volunteer_current_status", width:200},
         {title:"Feedback & Review", field:"feedback_performance_review", width:300},
