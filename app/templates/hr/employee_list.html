@@ -14,7 +14,7 @@
 </div>
 
 
-<table id="employee_table" style="border: 1px solid gray;"></table>
+<div id="employee_table" style="border: 1px solid gray;"></div>
 
 
 <!-- offcanvas for files display -->
@@ -56,7 +56,7 @@
           </li>
         </ul> -->
 
-        <table id="document_table" style="border: 1px solid gray;"></table>
+        <div id="document_table" style="border: 1px solid gray;"></div>
 
         <h6 class="mt-5 mb-1">Upload Documents</h6>
         <form action="/api/upload-employee-documents" class="dropzone" id="my-dropzone" enctype="multipart/form-data"></form>
@@ -271,9 +271,16 @@ let rowActions = function(cell, formatterParams, onRendered) {
     fileButton.setAttribute("data-bs-toggle", "offcanvas")
     fileButton.setAttribute("data-bs-target", "#offcanvasFiles")
     fileButton.setAttribute("aria-controls", "offcanvasFiles")
+
     fileButton.onclick = function() {
         console.log('Documents button clicked')
+        doc_data = [
+                      {id: 1, file_name: "hello.pdf"}, 
+                      {id: 2, file_name: "second.xlsx"}
+                   ]
+        documentTable.replaceData([])
     }
+    
     actionsDiv.appendChild(fileButton)
 
     return actionsDiv
@@ -289,18 +296,18 @@ let documentRowActions = function(cell, formatterParams, onRendered) {
   downloadButton.type = "button"
   downloadButton.innerText = "Download"
   downloadButton.className = "btn btn-primary btn-sm ms-2"
-  downloadButton.onclick = function() {
-      console.log(row.getData())
-  }
+//  downloadButton.onclick = function() {
+      //console.log(row.getData())
+ // }
   actionsDiv.appendChild(downloadButton)
 
   const deleteButton = document.createElement("button")
   deleteButton.innerText = "Delete"
   deleteButton.type = "button"
   deleteButton.className = "btn btn-danger btn-sm ms-2"
-  deleteButton.onclick = function() {
-      console.log('Documents button clicked')
-  }
+//  deleteButton.onclick = function() {
+      //console.log('Documents button clicked')
+//  }
   actionsDiv.appendChild(deleteButton)
 
   return actionsDiv
@@ -394,30 +401,32 @@ let table = new Tabulator("#employee_table", {
             field: 'actions',
             formatter: rowActions,
             width: 165,
-            align: 'center',
+            hozAlign: 'center',
             frozen: true
         },
     ],
 });
 
-
+/*
+let documentData = [
+  {"id": 1, "file_name": "hello.pdf"},
+  {"id": 2, "file_name": "test.xlsx"}
+]
+*/
 
 let documentTable = new Tabulator("#document_table", {
   // minHeight: "100px",  // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
-  data: [
-    {file_name: "hello.pdf"},
-    {file_name: "test.xlsx"}
-  ], //assign data to table
+  data: [], //assign data to table
   layout:"fitColumns", //fit columns to width of table (optional)
-  headerVisible: false,
+  // headerVisible: true,
   columns:[ //Define Table Columns
-      {title:"File Name", field:"file_name"},
+      {title:"Documents", field:"file_name"},
       {
           title: 'Actions',
           field: 'actions',
           formatter: documentRowActions,
           width: 200,
-          align: 'center',
+          hozAlign: 'center',
       },
   ],
 });
