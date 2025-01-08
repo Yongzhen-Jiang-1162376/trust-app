@@ -217,3 +217,37 @@ SET address = contact_detail
 
 UPDATE hr_employee
 SET contact_detail = '+64-027-3764-1221'
+
+
+
+SELECT
+	e.id,
+	e.full_name,
+	e.gender,
+	e.position,
+   e.portfolio_assigned,
+   e.manager_name,
+   e.employee_type,
+   e.mode_of_work,
+   e.date_of_birth,
+   e.nationality,
+   e.email,
+   e.contact_detail,
+   e.address,
+   e.start_date,
+   e.resignation_date,
+   e.last_working_date,
+   e.trial_period,
+   e.trial_period_start_date,
+   e.hours_per_week,
+   e.volunteer_current_status,
+   e.feedback_performance_review,
+   e.leave_reason_id,
+   l.reason AS leave_reason,
+   e.comments
+FROM hr_employee e
+LEFT JOIN hr_leave_reason l ON e.leave_reason_id = l.id
+
+
+
+SELECT start_date FROM hr_employee
