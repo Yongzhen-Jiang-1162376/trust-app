@@ -1,3 +1,4 @@
+/*
 SELECT * FROM employee;
 
 INSERT INTO employee (
@@ -50,10 +51,8 @@ VALUES
 'excellent performance', 
 'personal reason'
 )
+*/
 
-
-
-SELECT * FROM employee_bak;
 
 SELECT * FROM alembic_version;
 
@@ -113,15 +112,15 @@ comments
 '1983-01-03',
 'New Zealand',
 'john.smith@gmail.com',
+'+64-027-1234-9876',
 '102 East Rd, Christchurch',
 '2023-09-01',
-NULL,
-NULL,
-NULL,
+'2024-09-01',
+'2024-12-31',
 3,
 '2024-09-08',
 40,
-NULL,
+'Working',
 'John is excellent',
 1,
 'This is a comment'
@@ -129,74 +128,74 @@ NULL,
 (
 'Lillian Heath',
 'Female',
-'Administrator',
-'Marketing Management Portfolio',
-'Trump',
+'Software Developer',
+'Business Analysis Management Portfolio',
+'Tracy',
 'Employee',
-'Remote',
-'1987-09-03',
+'Onsite',
+'1983-01-03',
 'New Zealand',
-'marry.smith@gmail.com',
-'200 Sumner Rd, Christchurch',
+'john.smith@gmail.com',
+'+64-027-1234-9876',
+'102 East Rd, Christchurch',
+'2023-09-01',
 '2024-09-01',
-NULL,
-NULL,
-NULL,
+'2024-12-31',
 3,
-'2024-03-15',
+'2024-09-08',
 40,
-NULL,
-'Mary is excellent',
-3,
-'This is another comment'
+'Working',
+'John is excellent',
+1,
+'This is a comment'
 ),
 (
 'Jason Wu',
-'Male',
-'Administrator',
-'Marketing Management Portfolio',
-'Trump',
+'Female',
+'Software Developer',
+'Business Analysis Management Portfolio',
+'Tracy',
 'Employee',
-'Remote',
-'1987-09-03',
+'Onsite',
+'1983-01-03',
 'New Zealand',
-'marry.smith@gmail.com',
-'200 Sumner Rd, Christchurch',
+'john.smith@gmail.com',
+'+64-027-1234-9876',
+'102 East Rd, Christchurch',
+'2023-09-01',
 '2024-09-01',
-NULL,
-NULL,
-NULL,
+'2024-12-31',
 3,
-'2024-03-15',
+'2024-09-08',
 40,
-NULL,
-'Mary is excellent',
-3,
-'This is another comment'
+'Working',
+'John is excellent',
+1,
+'This is a comment'
 ),
 (
 'Etta Magana',
 'Female',
-'Administrator',
-'Marketing Management Portfolio',
-'Trump',
+'Software Developer',
+'Business Analysis Management Portfolio',
+'Tracy',
 'Employee',
-'Remote',
-'1987-09-03',
+'Onsite',
+'1983-01-03',
 'New Zealand',
-'marry.smith@gmail.com',
-'200 Sumner Rd, Christchurch',
+'john.smith@gmail.com',
+'+64-027-1234-9876',
+'102 East Rd, Christchurch',
+'2023-09-01',
 '2024-09-01',
-NULL,
-NULL,
-NULL,
+'2024-12-31',
 3,
-'2024-03-15',
+'2024-09-08',
 40,
-NULL,
-'Mary is excellent',
-3,
-'This is another comment'
+'Working',
+'John is excellent',
+1,
+'This is a comment'
 )
 
 
@@ -206,6 +205,15 @@ SET trial_period_start_date = '2023-03-15',
 WHERE id = 2
 
 
+UPDATE hr_employee
+SET start_date = '2024-04-01',
+	 resignation_date = '2024-12-01',
+	 last_working_date = '2024-12-31',
+	 volunteer_current_status = 'working'
 
 
+UPDATE hr_employee
+SET address = contact_detail
 
+UPDATE hr_employee
+SET contact_detail = '+64-027-3764-1221'

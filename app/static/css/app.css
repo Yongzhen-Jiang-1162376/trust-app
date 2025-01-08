@@ -75,3 +75,13 @@ table.dataTable td {
     width: 40% !important;
   }
 }
+
+
+.form-label {
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.form-control, .form-select {
+  border: 1px solid;
+}
