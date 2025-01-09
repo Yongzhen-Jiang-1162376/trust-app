@@ -25,47 +25,15 @@
   </div>
   <div class="offcanvas-body small">
     <div class="container my-4">
-        <!-- <h5>File List</h5> -->
-        <!-- <ul class="list-group">
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>
-              Document.pdf
-            </span>
-            <div>
-              <button class="btn btn-sm btn-primary me-2">Download</button>
-              <button class="btn btn-sm btn-danger">Delete</button>
-            </div>
-          </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>
-              Report.docx
-            </span>
-            <div>
-              <button class="btn btn-sm btn-primary me-2">Download</button>
-              <button class="btn btn-sm btn-danger">Delete</button>
-            </div>
-          </li>
-          <li class="list-group-item d-flex justify-content-between align-items-center">
-            <span>
-              Data.xlsx
-            </span>
-            <div>
-              <button class="btn btn-sm btn-primary me-2">Download</button>
-              <button class="btn btn-sm btn-danger">Delete</button>
-            </div>
-          </li>
-        </ul> -->
 
         <div id="document_table" style="border: 1px solid gray;"></div>
+
+        <input type="text" id="user_id" value="2">
 
         <h6 class="mt-5 mb-1">Upload Documents</h6>
         <form action="/api/upload-employee-document" class="dropzone" id="my-dropzone" enctype="multipart/form-data"></form>
 
         <div id="uploadAlertPlaceHolder"></div>
-
-        <!-- <div class="alert alert-success mt-5" role="alert">
-          A simple success alert—check it out!
-        </div> -->
 
       </div>
   </div>
@@ -198,11 +166,36 @@
 
 
 
-
-
 {% block scripts %}
 
 <script>
+
+const fetchEmployeeDocuments = async (user_id) => {
+  const url = `{{ url_for('api.get_employee_documents') }}`
+
+  const data = {
+    user_id: user_id
+  }
+  
+  fetch(url, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json'
+    },
+    body: JSON.stringify(data)
+  })
+  .then(response => {
+    return response.json()
+  })
+  .then(json => {
+    console.log(json)
+  })
+}
+  
+
+
+
+
 
 flatpickr(".datepicker", {
     dateFormat: "d/M/Y", // Set New Zealand date format
@@ -264,24 +257,34 @@ let rowActions = function(cell, formatterParams, onRendered) {
     }
     actionsDiv.appendChild(editButton)
 
-    const fileButton = document.createElement("button")
-    fileButton.innerText = "Documents"
-    fileButton.type = "button"
-    fileButton.className = "btn btn-warning btn-sm ms-2"
-    fileButton.setAttribute("data-bs-toggle", "offcanvas")
-    fileButton.setAttribute("data-bs-target", "#offcanvasFiles")
-    fileButton.setAttribute("aria-controls", "offcanvasFiles")
+    const documentButton = document.createElement("button")
+    documentButton.innerText = "Documents"
+    documentButton.type = "button"
+    documentButton.className = "btn btn-warning btn-sm ms-2"
+    documentButton.setAttribute("data-bs-toggle", "offcanvas")
+    documentButton.setAttribute("data-bs-target", "#offcanvasFiles")
+    documentButton.setAttribute("aria-controls", "offcanvasFiles")
 
-    fileButton.onclick = function() {
-        console.log('Documents button clicked')
-        doc_data = [
-                      {id: 1, file_name: "hello.pdf"}, 
-                      {id: 2, file_name: "second.xlsx"}
-                   ]
-        documentTable.replaceData([])
+    documentButton.onclick = async function() {
+      const user_id = row.getData().id
+
+      console.log(user_id)
+
+      documents = await fetchEmployeeDocuments(user_id)
+
+      console.log(documents)
+      /*
+      console.log('Documents button clicked')
+      console.log(row.getData().id)
+      doc_data = [
+                    {id: 1, file_name: "hello.pdf"}, 
+                    {id: 2, file_name: "second.xlsx"}
+                  ]
+      documentTable.replaceData([])
+      */
     }
     
-    actionsDiv.appendChild(fileButton)
+    actionsDiv.appendChild(documentButton)
 
     return actionsDiv
 }
@@ -296,9 +299,9 @@ let documentRowActions = function(cell, formatterParams, onRendered) {
   downloadButton.type = "button"
   downloadButton.innerText = "Download"
   downloadButton.className = "btn btn-primary btn-sm ms-2"
-//  downloadButton.onclick = function() {
-      //console.log(row.getData())
- // }
+  downloadButton.onclick = function() {
+      console.log(row.getData())
+  }
   actionsDiv.appendChild(downloadButton)
 
   const deleteButton = document.createElement("button")
@@ -450,6 +453,15 @@ Dropzone.options.myDropzone = {
       this.removeAllFiles(true)
       appendAlert('Documents uploaded successfully.', 'success');
       documentTable.replaceData([{file_name: '1.pdf'}, {file_name: '2.pdf'}, {file_name: '3.pdf'}])
+    })
+
+    this.on('sending', function(file, xhr, formData) {
+      const user_id = document.getElementById('user_id').value
+
+      console.log('sending')
+      console.log(user_id)
+
+      formData.append('user_id', user_id)
     })
   }
 }
