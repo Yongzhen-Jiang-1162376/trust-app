@@ -251,3 +251,15 @@ LEFT JOIN hr_leave_reason l ON e.leave_reason_id = l.id
 
 
 SELECT start_date FROM hr_employee
+
+SELECT
+	id,
+	employee_id,
+	original_file_name,
+	extension,
+	file_uuid,
+	date_format(created_at, '%Y-%m-%d %H:%i:%s') AS created_at
+FROM hr_employee_document;
+
+
+SELECT * FROM alembic_version

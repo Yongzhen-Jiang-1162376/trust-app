@@ -64,6 +64,8 @@ def get_employee_documents():
     print('entering api')
     
     data = request.get_json()
+
+    print(data)
     
     employee_id = data['employee_id']
     
@@ -77,15 +79,19 @@ def get_employee_documents():
             original_file_name,
             extension,
             file_uuid,
-            created_at
+            date_format(created_at, '%Y-%m-%d %H:%i:%s') AS created_at
         FROM hr_employee_document
         WHERE employee_id = :employee_id
         ORDER BY original_file_name
     '''
     
-    result = db.session.execute(text(sql), {'employee_id': employee_id}).fetchall()
+    result = db.session.execute(text(sql), {'employee_id': employee_id})
     
-    print(result)
-    
-    return jsonify(result)
+    result_mappings = result.mappings()
+
+    rows = [dict(row) for row in result_mappings]
+
+    # print(rows)
+
+    return rows
 

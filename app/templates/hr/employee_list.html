@@ -30,10 +30,10 @@
 
         <input type="text" id="employee_id">
 
-        <h6 class="mt-5 mb-1">Upload Documents</h6>
+        <h6 class="mt-5 mb-1">Please Upload Documents here</h6>
         <form action="/api/upload-employee-document" class="dropzone" id="my-dropzone" enctype="multipart/form-data"></form>
 
-        <div id="uploadAlertPlaceHolder"></div>
+        <!-- <div id="uploadAlertPlaceHolder"></div> -->
 
       </div>
   </div>
@@ -170,27 +170,31 @@
 
 <script>
 
-const fetchEmployeeDocuments = async (user_id) => {
+const fetchEmployeeDocuments = async (employee_id) => {
   const url = "{{ url_for('api.get_employee_documents', _external=True) }}"
   console.log(url)
 
   const data = {
-    user_id: user_id
+    employee_id: employee_id
   }
-  
-  fetch(url, {
+
+  const options = {
     method: 'POST',
     headers: {
       'content-type': 'application/json'
     },
     body: JSON.stringify(data)
-  })
-  .then(response => {
-    return response.json()
-  })
-  .then(json => {
-    console.log(json)
-  })
+  }
+
+  const response = await fetch(url, options)
+  
+  const result = await response.json()
+
+  return result
+  // .then(json => {
+  //   console.log('inside fetch:')
+  //   console.log(json)
+  // })
 }
   
 
@@ -275,20 +279,9 @@ let rowActions = function(cell, formatterParams, onRendered) {
       const employee_id_input = document.getElementById('employee_id')
       employee_id_input.value = employee_id
 
-      console.log(employee_id)
-
       documents = await fetchEmployeeDocuments(employee_id)
 
-      console.log(documents)
-      /*
-      console.log('Documents button clicked')
-      console.log(row.getData().id)
-      doc_data = [
-                    {id: 1, file_name: "hello.pdf"}, 
-                    {id: 2, file_name: "second.xlsx"}
-                  ]
-      documentTable.replaceData([])
-      */
+      documentTable.replaceData(documents)
     }
     
     actionsDiv.appendChild(documentButton)
@@ -328,18 +321,18 @@ let rowNumberFormatter = function(cell, formatterParams, onRendered) {
     return cell.getRow().getPosition();
 }
 
-const alertPlaceHolder = document.getElementById('uploadAlertPlaceHolder')
-let appendAlert = (message, type) => {
-  const wrapper = document.createElement('div')
-  wrapper.innerHTML = [
-    `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-    `   <div>${message}</div>`,
-    '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-    '</div>'
-  ].join('')
+// const alertPlaceHolder = document.getElementById('uploadAlertPlaceHolder')
+// let appendAlert = (message, type) => {
+//   const wrapper = document.createElement('div')
+//   wrapper.innerHTML = [
+//     `<div class="alert alert-${type} alert-dismissible" role="alert">`,
+//     `   <div>${message}</div>`,
+//     '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
+//     '</div>'
+//   ].join('')
 
-  document.getElementById('uploadAlertPlaceHolder').append(wrapper)
-}
+//   document.getElementById('uploadAlertPlaceHolder').append(wrapper)
+// }
 
 
 
@@ -430,12 +423,17 @@ let documentTable = new Tabulator("#document_table", {
   layout:"fitColumns", //fit columns to width of table (optional)
   // headerVisible: true,
   columns:[ //Define Table Columns
-      {title:"Documents", field:"file_name"},
+      {title:"Id", field:"id", visible:false},
+      {title:"Documents", field:"original_file_name"},
+      {title:"Uploaded At", field:"created_at", formatter:"datetime", width: 150, formatterParams:{
+          inputFormat:"yyyy-MM-dd HH:mm:ss",
+          outputFormat:"dd/MMM/yyyy HH:mm:ss"
+      }},
       {
           title: 'Actions',
           field: 'actions',
           formatter: documentRowActions,
-          width: 200,
+          width: 180,
           hozAlign: 'center',
       },
   ],
@@ -458,8 +456,15 @@ Dropzone.options.myDropzone = {
 
     this.on('queuecomplete', function() {
       this.removeAllFiles(true)
-      appendAlert('Documents uploaded successfully.', 'success');
-      documentTable.replaceData([{file_name: '1.pdf'}, {file_name: '2.pdf'}, {file_name: '3.pdf'}])
+      new Notify({
+        status: 'success',
+        title: '',
+        text: 'Uploaded successfully',
+        effect: 'fade',
+        speed: 300,
+        autotimeout: 1500,
+        position: 'right bottom'
+      })
     })
 
     this.on('sending', function(file, xhr, formData) {

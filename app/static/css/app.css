@@ -85,3 +85,9 @@ table.dataTable td {
 .form-control, .form-select {
   border: 1px solid;
 }
+
+.dropzone {
+  background-color: #82c0cc;
+  font-size: 20px;
+  border-radius: 10px;
+}
