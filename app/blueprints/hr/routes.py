@@ -7,7 +7,7 @@ from app.extensions import db
 from pprint import pprint
 
 
-@bp.route('/employees')
+@bp.route('/employees', methods=('GET',))
 def employee_list():
     
     columns = [
@@ -183,3 +183,8 @@ def employee_list():
     pprint(result_json[0])
     
     return render_template('hr/employee_list.html', columns=columns, data=result_json)
+
+
+@bp.route('/employees/create', methods=('GET', 'POST'))
+def create_employee():
+    pass

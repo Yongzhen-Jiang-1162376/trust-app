@@ -1,4 +1,4 @@
-from flask import request, jsonify, current_app
+from flask import request, jsonify, current_app, send_file
 from sqlalchemy import text
 from app.blueprints.api import bp
 from app.extensions import db
@@ -25,7 +25,7 @@ def upload_employee_document():
     
     params = {
         'employee_id': employee_id,
-        'extension': extension,
+        'extension': extension[1:] if len(extension) > 1 else extension,
         'original_file_name': original_file_name,
         'file_uuid': file_uuid
     }
@@ -61,16 +61,11 @@ def upload_employee_document():
 
 @bp.route('/get-employee-documents', methods=('POST',))
 def get_employee_documents():
-    print('entering api')
-    
-    data = request.get_json()
-
-    print(data)
-    
+    data = request.get_json()    
     employee_id = data['employee_id']
-    
-    print(data)
-    print(employee_id)
+
+    # print(data)
+    # print(employee_id)
     
     sql = '''
         SELECT
@@ -95,3 +90,60 @@ def get_employee_documents():
 
     return rows
 
+@bp.route('/remove-employee-document', methods=('POST',))
+def remove_employee_document():
+    data = request.get_json()    
+    document_id = data['document_id']
+
+    select_sql = '''
+        SELECT concat(file_uuid, '.', extension) AS file_name FROM hr_employee_document WHERE id = :document_id
+    '''
+
+    result = db.session.execute(text(select_sql), {'document_id': document_id})
+    print(result)
+
+    row = result.fetchone()
+    if row:
+        remove_path = os.path.join(current_app.config['UPLOAD_PATH'], row[0])
+        if os.path.exists(remove_path):
+            os.remove(remove_path)
+
+    remove_sql = '''
+        DELETE FROM hr_employee_document WHERE id = :document_id
+    '''
+    
+    db.session.execute(text(remove_sql), {'document_id': document_id})
+    db.session.commit()
+
+    return jsonify({'status': 'success', 'message': 'Document removed successfully'}), 200
+
+
+@bp.route('/download-employee-document', methods=('POST',))
+def download_employee_document():
+    data = request.get_json()    
+    document_id = data['document_id']
+
+    select_sql = '''
+        SELECT concat(file_uuid, '.', extension) AS file_name FROM hr_employee_document WHERE id = :document_id
+    '''
+
+    result = db.session.execute(text(select_sql), {'document_id': document_id})
+    print(result)
+
+    row = result.fetchone()
+    if row:
+        file_path = os.path.join(current_app.config['UPLOAD_PATH'], row[0])
+        if os.path.exists(file_path):
+            
+            return send_file(file_path, as_attachment=True)
+
+    return jsonify({'status': 'error', 'message': 'Document not existing.'}), 400
+
+
+@bp.route('/employee/update', methods=('POST',))
+def update_employee():
+    pass
+
+@bp.route('/export-employee-data', methods=('GET',))
+def export_employee_data():
+    pass

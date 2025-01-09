@@ -28,7 +28,7 @@
 
         <div id="document_table" style="border: 1px solid gray;"></div>
 
-        <input type="text" id="employee_id">
+        <input type="text" id="employee_id" class="d-none" disabled>
 
         <h6 class="mt-5 mb-1">Please Upload Documents here</h6>
         <form action="/api/upload-employee-document" class="dropzone" id="my-dropzone" enctype="multipart/form-data"></form>
@@ -172,7 +172,7 @@
 
 const fetchEmployeeDocuments = async (employee_id) => {
   const url = "{{ url_for('api.get_employee_documents', _external=True) }}"
-  console.log(url)
+  // console.log(url)
 
   const data = {
     employee_id: employee_id
@@ -187,7 +187,6 @@ const fetchEmployeeDocuments = async (employee_id) => {
   }
 
   const response = await fetch(url, options)
-  
   const result = await response.json()
 
   return result
@@ -196,9 +195,47 @@ const fetchEmployeeDocuments = async (employee_id) => {
   //   console.log(json)
   // })
 }
-  
 
+const removeEmployeeDocument = async (document_id) => {
+  const url = "{{ url_for('api.remove_employee_document', _external=True) }}"
 
+  const data = {
+    document_id: document_id
+  }
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }
+
+  const response = await fetch(url, options)
+  const result = await response.json()
+
+  return result
+}
+
+const downloadEmployeeDocument = async (document_id) => {
+  const url = "{{ url_for('api.download_employee_document', _external=True) }}"
+
+  const data = {
+    document_id: document_id
+  }
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }
+
+  result = await fetch(url, options)
+
+  return result
+}
 
 
 
@@ -299,8 +336,26 @@ let documentRowActions = function(cell, formatterParams, onRendered) {
   downloadButton.type = "button"
   downloadButton.innerText = "Download"
   downloadButton.className = "btn btn-primary btn-sm ms-2"
-  downloadButton.onclick = function() {
-      console.log(row.getData())
+  downloadButton.onclick = async function() {
+      const document_id = row.getData().id
+      const filename = row.getData().original_file_name
+
+      const response = await downloadEmployeeDocument(document_id)
+
+      console.log('--response--')
+      console.log(response)
+
+      // let filename = 'test.pdf'
+
+      blob = await response.blob()
+
+      console.log('--file--')
+      console.log(blob)
+
+      let link = document.createElement('a')
+      link.href = URL.createObjectURL(blob)
+      link.download = filename
+      link.click()
   }
   actionsDiv.appendChild(downloadButton)
 
@@ -308,9 +363,15 @@ let documentRowActions = function(cell, formatterParams, onRendered) {
   deleteButton.innerText = "Delete"
   deleteButton.type = "button"
   deleteButton.className = "btn btn-danger btn-sm ms-2"
-//  deleteButton.onclick = function() {
-      //console.log('Documents button clicked')
-//  }
+  deleteButton.onclick = async function() {
+    if (confirm('Are you sure to delete this document?'))
+    {
+      const document_id = row.getData().id
+      const result = await removeEmployeeDocument(document_id)
+      row.delete()
+      notifySuccess('document deleted successfully')
+    }
+  }
   actionsDiv.appendChild(deleteButton)
 
   return actionsDiv
@@ -454,17 +515,15 @@ Dropzone.options.myDropzone = {
       appendAlert(response.message, 'danger')
     })
 
-    this.on('queuecomplete', function() {
+    this.on('queuecomplete', async function() {
       this.removeAllFiles(true)
-      new Notify({
-        status: 'success',
-        title: '',
-        text: 'Uploaded successfully',
-        effect: 'fade',
-        speed: 300,
-        autotimeout: 1500,
-        position: 'right bottom'
-      })
+
+      const employee_id = document.getElementById('employee_id').value
+      documents = await fetchEmployeeDocuments(employee_id)
+      documentTable.replaceData(documents)
+
+      notifySuccess('Uploaded successfully')
+
     })
 
     this.on('sending', function(file, xhr, formData) {
