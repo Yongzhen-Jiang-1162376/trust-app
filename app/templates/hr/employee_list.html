@@ -28,7 +28,7 @@
 
         <div id="document_table" style="border: 1px solid gray;"></div>
 
-        <input type="text" id="user_id" value="2">
+        <input type="text" id="employee_id">
 
         <h6 class="mt-5 mb-1">Upload Documents</h6>
         <form action="/api/upload-employee-document" class="dropzone" id="my-dropzone" enctype="multipart/form-data"></form>
@@ -171,7 +171,8 @@
 <script>
 
 const fetchEmployeeDocuments = async (user_id) => {
-  const url = `{{ url_for('api.get_employee_documents') }}`
+  const url = "{{ url_for('api.get_employee_documents', _external=True) }}"
+  console.log(url)
 
   const data = {
     user_id: user_id
@@ -180,7 +181,7 @@ const fetchEmployeeDocuments = async (user_id) => {
   fetch(url, {
     method: 'POST',
     headers: {
-      'Accept': 'application/json'
+      'content-type': 'application/json'
     },
     body: JSON.stringify(data)
   })
@@ -266,11 +267,17 @@ let rowActions = function(cell, formatterParams, onRendered) {
     documentButton.setAttribute("aria-controls", "offcanvasFiles")
 
     documentButton.onclick = async function() {
-      const user_id = row.getData().id
+      const employee_id = row.getData().id
 
-      console.log(user_id)
+      console.log(employee_id)
 
-      documents = await fetchEmployeeDocuments(user_id)
+      // set employee id
+      const employee_id_input = document.getElementById('employee_id')
+      employee_id_input.value = employee_id
+
+      console.log(employee_id)
+
+      documents = await fetchEmployeeDocuments(employee_id)
 
       console.log(documents)
       /*
@@ -456,12 +463,9 @@ Dropzone.options.myDropzone = {
     })
 
     this.on('sending', function(file, xhr, formData) {
-      const user_id = document.getElementById('user_id').value
+      const employee_id = document.getElementById('employee_id').value
 
-      console.log('sending')
-      console.log(user_id)
-
-      formData.append('user_id', user_id)
+      formData.append('employee_id', employee_id)
     })
   }
 }
