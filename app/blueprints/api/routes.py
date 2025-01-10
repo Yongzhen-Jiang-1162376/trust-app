@@ -169,7 +169,7 @@ def update_employee():
             hours_per_week = :hours_per_week,
             volunteer_current_status = :volunteer_current_status,
             feedback_performance_review = :feedback_performance_review,
-            leave_reason_id = :leave_reason,
+            leave_reason_id = :leave_reason_id,
             comments = :comments,
             updated_at = now()
         WHERE id = :employee_id

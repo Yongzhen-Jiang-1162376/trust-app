@@ -143,13 +143,16 @@
             <label for="feedback_performance_review" class="form-label">Feedback & Performance Review</label>
             <textarea class="form-control h-100" rows="5" id="feedback_performance_review" name="feedback_performance_review"></textarea>
           </div>
-          <label for="leave_reason" class="form-label">Leave Reason</label>
-            <select type="text" class="form-select" id="leave_reason" name="leave_reason">
+          <div class="mb-3">
+            <label for="leave_reason_id" class="form-label">Leave Reason</label>
+            <select type="text" class="form-select" id="leave_reason_id" name="leave_reason_id">
               <option value=0></option>
               <option value=1>Personal</option>
               <option value=2>Family</option>
               <option value=3>Relocation</option>
             </select>
+          </div>
+          <input type="hidden" class="form-control" id="leave_reason" name="leave_reason">
           <div class="mb-3">
             <label for="comments" class="form-label">Comments</label>
             <input type="text" class="form-control" id="comments" name="comments">
@@ -301,43 +304,18 @@ const populateEditForm = function(rowData) {
   document.getElementById('hours_per_week').value = rowData.hours_per_week
   document.getElementById('volunteer_current_status').value = rowData.volunteer_current_status
   document.getElementById('feedback_performance_review').value = rowData.feedback_performance_review
-  document.getElementById('leave_reason').value = rowData.leave_reason_id
+  document.getElementById('leave_reason_id').value = rowData.leave_reason_id
+  document.getElementById('leave_reason').value = rowData.leave_reason
   document.getElementById('comments').value = rowData.comments
 }
 
+document.getElementById('leave_reason_id').addEventListener('change', function(event) {
+  const selectElement = event.target
+  const selectedValue = selectElement.value
+  const selectedText = selectElement.options[selectElement.selectedIndex].text
 
-// const submitEditData = async function() {
-
-//   const form = document.getElementById('editForm')
-//   const formData = new FormData(form)
-
-//   const date_fields = ['start_date', 'trial_period_start_date', 'date_of_birth', 'resignation_date', 'last_working_date']
-
-//   const data = {}
-//   formData.forEach((value, key) => {
-//     if (key === 'id') {
-//       data['employee_id'] = value
-//     } 
-//     else if (date_fields.includes(key)) {
-//       data[key] = nzDateToISO(value)
-//     } else {
-//       data[key] = value
-//     }
-//   })
-
-//   console.log(data)
-
-//   const response = await updateEmployeeProfile(data)
-
-//   console.log('-----------edit------------')
-//   console.log(response)
-// }
-
-// const submitEditDataTest = async function() {
-//   const msg = 'clicked'
-//   alert(msg)
-//   return false
-// }
+  document.getElementById('leave_reason').value = selectedText
+})
 
 
 document.getElementById('editForm').addEventListener('submit', async function(event) {
@@ -377,6 +355,9 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
     offcanvasInstance.hide()
 
     // update table row data
+
+    console.log('------------before update table')
+    console.log(data)
     table.updateRow(employee_id, data)
 
     // notify
