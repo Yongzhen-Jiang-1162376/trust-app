@@ -4,8 +4,6 @@ from app.models.employee import Employee, LeaveReason
 from app.schemas.employee import EmployeeSchema
 from sqlalchemy import select, text
 from app.extensions import db
-from pprint import pprint
-import json
 
 
 @bp.route('/employees', methods=('GET',))
@@ -176,7 +174,7 @@ def employee_list():
     # serialize to json string
     json_str = employee_schema.dumps(result)
     
-    print(json_str)
+    # print(json_str)
     
     return render_template('hr/employee_list.html', columns=columns, data=json_str)
 
