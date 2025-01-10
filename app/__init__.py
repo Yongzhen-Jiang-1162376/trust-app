@@ -1,3 +1,4 @@
+import logging
 from flask import Flask
 from instance.config import Config
 from app.extensions import db, login_manager, migrate, ma
@@ -46,4 +47,8 @@ def create_app(test_config=None):
     def load_user(user_id):
         return User.query.get(int(user_id))
     
+
+    logging.basicConfig()
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+
     return app

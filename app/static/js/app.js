@@ -6,6 +6,7 @@ const notifySuccess = function(message) {
         effect: 'fade',
         speed: 300,
         autotimeout: 1500,
+        type: 'filled',
         position: 'right bottom'
     })
 }
@@ -18,11 +19,13 @@ const notifyError = function(message) {
         effect: 'fade',
         speed: 300,
         autotimeout: 1500,
+        type: 'filled',
         position: 'right bottom'
     })
 }
 
-const nzDateToISO = function(dateString) {
+const nzDateToISODate = function(dateString) {
+    let DateTime = luxon.DateTime
     const nzDate = DateTime.fromFormat(dateString, "dd/MMM/yyyy")
-    return nzDate.toISO()
+    return nzDate.toISODate()
 }

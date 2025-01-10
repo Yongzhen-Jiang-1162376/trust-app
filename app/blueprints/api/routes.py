@@ -146,9 +146,7 @@ def update_employee():
     
     data = request.get_json()    
     # employee_id = data['employee_id']
-    
-    print(data)
-    
+
     sql = '''
         UPDATE hr_employee
         SET full_name = :full_name,
@@ -172,13 +170,13 @@ def update_employee():
             volunteer_current_status = :volunteer_current_status,
             feedback_performance_review = :feedback_performance_review,
             leave_reason_id = :leave_reason,
-            comments = :comments'
+            comments = :comments,
             updated_at = now()
         WHERE id = :employee_id
     '''
     
     db.session.execute(text(sql), data)
-    db.session.commit
+    db.session.commit()
     
     return jsonify({'status': 'success', 'message': 'Profile data updated successfully'}), 200
 

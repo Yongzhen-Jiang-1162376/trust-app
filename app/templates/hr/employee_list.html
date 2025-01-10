@@ -306,64 +306,82 @@ const populateEditForm = function(rowData) {
 }
 
 
-const submitEditData = async function() {
+// const submitEditData = async function() {
 
-  const form = document.getElementById('editForm')
-  const formData = new FormData(form)
+//   const form = document.getElementById('editForm')
+//   const formData = new FormData(form)
 
-  const data = {}
-  formData.forEach((value, key) => {
-    if (key === 'id') {
-      data['employee_id'] = value
-    } 
-    else if (key.endsWith('date')) {
-      data[key] = nzDateToISO(value)
-    } else {
-      data[key] = value
-    }
-  })
+//   const date_fields = ['start_date', 'trial_period_start_date', 'date_of_birth', 'resignation_date', 'last_working_date']
 
-  console.log(data)
+//   const data = {}
+//   formData.forEach((value, key) => {
+//     if (key === 'id') {
+//       data['employee_id'] = value
+//     } 
+//     else if (date_fields.includes(key)) {
+//       data[key] = nzDateToISO(value)
+//     } else {
+//       data[key] = value
+//     }
+//   })
 
-  const response = await updateEmployeeProfile(data)
+//   console.log(data)
 
-  console.log('-----------edit------------')
-  console.log(response)
-}
+//   const response = await updateEmployeeProfile(data)
 
-const submitEditDataTest = async function() {
-  const msg = 'clicked'
-  alert(msg)
-  return false
-}
+//   console.log('-----------edit------------')
+//   console.log(response)
+// }
+
+// const submitEditDataTest = async function() {
+//   const msg = 'clicked'
+//   alert(msg)
+//   return false
+// }
 
 
 document.getElementById('editForm').addEventListener('submit', async function(event) {
   event.preventDefault();
 
-  alert('submitted')
-
   const form = document.getElementById('editForm')
   const formData = new FormData(form)
+  const employee_id = formData.get('id')
+
+  console.log('employee_id')
+  console.log(employee_id)
+
+  const date_fields = ['start_date', 'trial_period_start_date', 'date_of_birth', 'resignation_date', 'last_working_date']
 
   const data = {}
   formData.forEach((value, key) => {
     if (key === 'id') {
       data['employee_id'] = value
     } 
-    else if (key.endsWith('date')) {
-      data[key] = nzDateToISO(value)
+    else if (date_fields.includes(key)) {
+      data[key] = nzDateToISODate(value)
     } else {
       data[key] = value
     }
   })
 
+  console.log('---------- data ------------')
   console.log(data)
 
   const response = await updateEmployeeProfile(data)
 
-  console.log('-----------edit------------')
-  console.log(response)
+  if (response.status == 200) {
+    
+    // hide offcanvas
+    const offcanvasElement = document.getElementById('offcanvasEdit')
+    const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement)
+    offcanvasInstance.hide()
+
+    // update table row data
+    table.updateRow(employee_id, data)
+
+    // notify
+    notifySuccess('Employee profile updated successfully')
+  }
 })
 
 let rowActions = function(cell, formatterParams, onRendered) {
@@ -486,7 +504,7 @@ let rowNumberFormatter = function(cell, formatterParams, onRendered) {
 //create Tabulator on DOM element with id "example-table"
 let table = new Tabulator("#employee_table", {
     minHeight: "650px", // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
-    data:`{{ data | tojson }}`, //assign data to table
+    data: `{{ data | tojson }}`, //assign data to table
     layout:"fitColumns", //fit columns to width of table (optional)
     pagination: "local",
     paginationSize: 6,
