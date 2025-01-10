@@ -38,6 +38,9 @@ def create_app(test_config=None):
     from app.blueprints.api import bp as api_bp
     app.register_blueprint(api_bp)
     
+    from app.blueprints.utils import bp as utils_bp
+    app.register_blueprint(utils_bp)
+    
     
     with app.app_context():
         from app.models.auth.models import User
