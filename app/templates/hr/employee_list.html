@@ -520,8 +520,8 @@ const table = new Tabulator("#employee_table", {
     layout:"fitColumns", //fit columns to width of table (optional)
     selectableRows: true,
     pagination: "local",
-    paginationSize: 6,
-    paginationSizeSelector: [3, 6, 8, 10],
+    paginationSize: 15,
+    paginationSizeSelector: [10, 15, 20, 50, 100],
     paginationCounter: "rows",
     rowHeader: {
         headerSort: false,
@@ -537,9 +537,9 @@ const table = new Tabulator("#employee_table", {
         }
     },
     columns:[ //Define Table Columns
-        {title:"No.", field:"rownum", width:80, formatter:rowNumberFormatter},
-        {title:"InternalId", field:"id", width:100, visible: false},
-        {title:"Full Name", field:"full_name", width:150},
+        {title:"No.", field:"rownum", width:80, formatter:rowNumberFormatter, frozen: true},
+        {title:"InternalId", field:"id", width:100, visible: false, frozen: true},
+        {title:"Full Name", field:"full_name", width:150, frozen: true},
         {title:"Gender", field:"gender", width:100},
         {title:"Position", field:"position", width:150},
         {title:"Portfolio Assigned", field:"portfolio_assigned", width:300},
