@@ -34,7 +34,7 @@ class Employee(db.Model):
     resignation_date: Mapped[Optional[date]]
     last_working_date: Mapped[Optional[date]]
     feedback_performance_review: Mapped[Optional[str]] = mapped_column(Text)
-    leave_reason_id: Mapped[int] = mapped_column(ForeignKey('hr_leave_reason.id'))
+    leave_reason_id: Mapped[Optional[int]] = mapped_column(ForeignKey('hr_leave_reason.id'))
     leave_reason: Mapped[Optional['LeaveReason']] = relationship()
     comments: Mapped[Optional[str]] = mapped_column(String(255))
     documents: Mapped[list['EmployeeDocument']] = relationship()
