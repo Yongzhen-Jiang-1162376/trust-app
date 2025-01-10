@@ -21,7 +21,7 @@ def generate_fake_emp():
         'nationality': fake.country(),
         'email': fake.email(),
         'contact_detail': fake.phone_number(),
-        'address': fake.address(),
+        'address': fake.address().replace('\n', ' '),
         'start_date': fake.date(),
         'resignation_date': fake.date(),
         'last_working_date': fake.date(),

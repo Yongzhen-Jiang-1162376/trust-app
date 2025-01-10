@@ -5,6 +5,7 @@ from app.schemas.employee import EmployeeSchema
 from sqlalchemy import select, text
 from app.extensions import db
 from pprint import pprint
+import json
 
 
 @bp.route('/employees', methods=('GET',))
@@ -159,30 +160,25 @@ def employee_list():
             e.trial_period_start_date,
             e.hours_per_week,
             e.volunteer_current_status,
-            e.feedback_performance_review,
+            REPLACE(e.feedback_performance_review, '\\n', '\\\\n') AS feedback_performance_review,
             e.leave_reason_id,
             l.reason as leave_reason,
             e.comments
         FROM hr_employee e
         LEFT JOIN hr_leave_reason l ON e.leave_reason_id = l.id
+        -- WHERE e.id = 57
     '''
     
     result = db.session.execute(text(sql)).fetchall()
 
-    pprint(result)
-    
     employee_schema = EmployeeSchema(many=True)
 
-    result_json = employee_schema.dump(result)
-
-    # [pprint(row) for row in result]
+    # serialize to json string
+    json_str = employee_schema.dumps(result)
     
-    # data = [dict(row) for row in result]
+    print(json_str)
     
-    # pprint(columns)
-    pprint(result_json[0])
-    
-    return render_template('hr/employee_list.html', columns=columns, data=result_json)
+    return render_template('hr/employee_list.html', columns=columns, data=json_str)
 
 
 @bp.route('/employees/create', methods=('GET', 'POST'))
