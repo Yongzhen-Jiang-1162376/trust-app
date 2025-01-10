@@ -38,7 +38,14 @@ const notifyWarning = function (message) {
 }
 
 const nzDateToISODate = function(dateString) {
-    let DateTime = luxon.DateTime
+    const DateTime = luxon.DateTime
     const nzDate = DateTime.fromFormat(dateString, "dd/MMM/yyyy")
-    return nzDate.toISODate()
+    // return nzDate.toISODate()
+    return nzDate.toFormat("yyyy-MM-dd")
+}
+
+const ISODateToNZDate = function(dateString) {
+    const DateTime = luxon.DateTime
+    const isoDate = DateTime.fromFormat(dateString, "yyyy-MM-dd")
+    return isoDate.toFormat("dd/MMM/yyyy")
 }

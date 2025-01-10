@@ -12,7 +12,7 @@
           <button type="submite" class="btn btn-info btn-sm ms-2">Refresh</button>
         </form>
         <button type="button" class="btn btn-danger btn-sm ms-2" onclick="deleteEmployees()">Delete</button>
-        <button type="button" class="btn btn-secondary btn-sm ms-2">Export</button>
+        <button type="button" class="btn btn-secondary btn-sm ms-2" onclick="exportEmployeeData()">Export</button>
     </div>
 </div>
 
@@ -260,6 +260,66 @@ const updateEmployeeProfile = async (data) => {
 }
 
 
+const exportEmployeeData = function() {
+  table.download('xlsx', 'employee.xlsx', {
+    /*
+    columnCalcs: true,
+    columns: [
+      {title:"No.", field:"rownum", width:80},
+      {title:"InternalId", field:"id", width:100, visible: false},
+      {title:"Full Name", field:"full_name", width:150},
+      {title:"Gender", field:"gender", width:100},
+      {title:"Position", field:"position", width:150},
+      {title:"Portfolio Assigned", field:"portfolio_assigned", width:300},
+      {title:"Manager Name", field:"manager_name", width:150},
+      {title:"Employee Type", field:"employee_type", width:150},
+      {title:"Mode of Work", field:"mode_of_work", width:150},
+      {
+        title:"Date of Birth", 
+        field:"date_of_birth", 
+      },
+      {title:"Nationality", field:"nationality", width:150},
+      {title:"Email", field:"email", width:200},
+      {title:"Contact Detail", field:"contact_detail", width:200},
+      {title:"Address", field:"address", width:250},
+      {
+        title:"Start Date", 
+        field:"start_date", 
+      },
+      {
+        title:"Resignation Date", 
+        field:"resignation_date", 
+        width:200, 
+      },
+      {
+        title:"Last Working Day", 
+        field:"last_working_date", 
+        width:200,
+      },
+      {
+        title:"Trial Period Start Date", 
+        field:"trial_period_start_date", 
+        width:250,
+      },
+      {title:"Trial Period", field:"trial_period", width:150},
+      {title:"Hours per Week", field:"hours_per_week", width:150},
+      {title:"Volunteer Status", field:"volunteer_current_status", width:200},
+      {title:"Feedback & Review", field:"feedback_performance_review", width:300},
+      {title:"Leave Reason Id", field:"leave_reason_id", width:150, visible: false},
+      {title:"Leave Reason", field:"leave_reason", width:200},
+      {title:"Comments", field:"comments", width:300}
+    ],
+    downloadFormatter: function(cell) {
+      if (cell.getColumn().getField() === 'date_of_birth') {
+        return ISODateToNZDate(cell.getValue())
+      }
+      return cell.getValue()
+    }
+    */
+  })
+}
+
+
 flatpickr(".datepicker", {
     dateFormat: "d/M/Y", // Set New Zealand date format
     allowInput: false, // Allow manual input
@@ -466,10 +526,11 @@ const documentRowActions = function(cell, formatterParams, onRendered) {
 }
 
 
-
-
 const rowNumberFormatter = function(cell, formatterParams, onRendered) {
-    return cell.getRow().getPosition();
+    const page = table.getPage()
+    const pageSize = table.getPageSize()
+    const rowIndexOnPage = cell.getRow().getPosition()
+    return (page - 1) * pageSize + rowIndexOnPage
 }
 
 const deleteEmployees = async function() {
@@ -537,8 +598,8 @@ const table = new Tabulator("#employee_table", {
         }
     },
     columns:[ //Define Table Columns
-        {title:"No.", field:"rownum", width:80, formatter:rowNumberFormatter, frozen: true},
-        {title:"InternalId", field:"id", width:100, visible: false, frozen: true},
+        {title:"No.", field:"row_num", width:80, formatter:rowNumberFormatter, frozen: true, download: false},
+        {title:"Internal Id", field:"id", width:100, visible: false, frozen: true, download: false},
         {title:"Full Name", field:"full_name", width:150, frozen: true},
         {title:"Gender", field:"gender", width:100},
         {title:"Position", field:"position", width:150},
@@ -546,10 +607,24 @@ const table = new Tabulator("#employee_table", {
         {title:"Manager Name", field:"manager_name", width:150},
         {title:"Employee Type", field:"employee_type", width:150},
         {title:"Mode of Work", field:"mode_of_work", width:150},
-        {title:"Date of Birth", field:"date_of_birth", width:150, formatter:"datetime", formatterParams:{
-          inputFormat:"yyyy-MM-dd",
-          outputFormat:"dd/MMM/yyyy"
-        }},
+        {
+          title:"Date of Birth", 
+          field:"date_of_birth", 
+          width:150, 
+          formatter:"datetime", 
+          formatterParams:{
+            inputFormat:"yyyy-MM-dd",
+            outputFormat:"dd/MMM/yyyy"
+          },
+          /*
+          downloadFormatter: function(cell, formatterParams) {
+            const rawDate = cell.getValue()
+            const DateTime = luxon.DateTime
+            const date = DateTime.fromFormat(rawDate, 'yyyy-MM-dd')
+            return date.toFormat('dd/MM/yyyy')
+          }
+          */
+        },
         {title:"Nationality", field:"nationality", width:150},
         {title:"Email", field:"email", width:200},
         {title:"Contact Detail", field:"contact_detail", width:200},
@@ -583,9 +658,18 @@ const table = new Tabulator("#employee_table", {
             formatter: rowActions,
             width: 165,
             hozAlign: 'center',
-            frozen: true
+            frozen: true,
+            download: false
         },
-    ]
+    ],
+    /*
+    downloadFormatter: function(cell, formatterParams) {
+      const rawDate = cell.getValue()
+      const DateTime = luxon.DateTime
+      const date = DateTime.fromFormat(rawDate, 'yyyy-MM-dd')
+      return date.toFormat('dd/MM/yyyy')
+    }
+    */
 });
 
 document.getElementById('employee_table').style.whiteSpace = 'pre-line';

@@ -165,6 +165,7 @@ def employee_list():
         FROM hr_employee e
         LEFT JOIN hr_leave_reason l ON e.leave_reason_id = l.id
         -- WHERE e.id = 57
+        ORDER BY e.id
     '''
     
     result = db.session.execute(text(sql)).fetchall()
