@@ -7,6 +7,70 @@ import uuid
 from pathlib import Path
 
 
+def remove_document(file_path):
+    if os.path.exists(file_path):
+        os.remove(file_path)
+
+
+def remove_employee(employee_id):
+    remove_employee_document(employee_id)
+    remove_employee_document_records(employee_id)
+    remove_employee_profile(employee_id)
+
+
+def remove_employee_documents(employee_id):
+    sql = '''
+        SELECT concat(file_uuid, '.', extension) AS file_name FROM hr_employee_document WHERE employee_id = :employee_id
+    '''
+
+    result = db.session.execute(text(sql), {'employee_id': employee_id}).fetchall()
+
+    print(result)
+
+    for file_path in result:
+        remove_document(file_path)
+
+
+def remove_employee_document_records(employee_id):
+    sql = '''
+        DELETE FROM hr_employee_document WHERE employee_id = :employee_id
+    '''
+
+    db.session.execute(text(sql), {'employee_id': employee_id})
+    db.session.commit()
+
+
+def remove_employee_profile(employee_id):
+    sql = '''
+        DELETE FROM hr_employee WHERE id = :employee_id
+    '''
+
+    db.session.execute(text(sql), {'employee_id': employee_id})
+    db.session.commit()
+
+
+def remove_employee_document_by_document_id(document_id):
+    select_sql = '''
+        SELECT concat(file_uuid, '.', extension) AS file_name FROM hr_employee_document WHERE id = :document_id
+    '''
+
+    result = db.session.execute(text(select_sql), {'document_id': document_id})
+    # print(result)
+
+    row = result.fetchone()
+    if row:
+        remove_path = os.path.join(current_app.config['UPLOAD_PATH'], row[0])
+        if os.path.exists(remove_path):
+            os.remove(remove_path)
+
+    remove_sql = '''
+        DELETE FROM hr_employee_document WHERE id = :document_id
+    '''
+    
+    db.session.execute(text(remove_sql), {'document_id': document_id})
+    db.session.commit()
+
+
 @bp.route('/upload-employee-document', methods=('POST',))
 def upload_employee_document():
     if 'file' not in request.files:
@@ -95,27 +159,15 @@ def remove_employee_document():
     data = request.get_json()    
     document_id = data['document_id']
 
-    select_sql = '''
-        SELECT concat(file_uuid, '.', extension) AS file_name FROM hr_employee_document WHERE id = :document_id
-    '''
-
-    result = db.session.execute(text(select_sql), {'document_id': document_id})
-    print(result)
-
-    row = result.fetchone()
-    if row:
-        remove_path = os.path.join(current_app.config['UPLOAD_PATH'], row[0])
-        if os.path.exists(remove_path):
-            os.remove(remove_path)
-
-    remove_sql = '''
-        DELETE FROM hr_employee_document WHERE id = :document_id
-    '''
+    remove_employee_document_by_document_id(document_id)
     
-    db.session.execute(text(remove_sql), {'document_id': document_id})
-    db.session.commit()
-
     return jsonify({'status': 'success', 'message': 'Document removed successfully'}), 200
+
+
+@bp.route('/remove-employee-list', methods=('POST',))
+def remove_employee_list():
+    data = request.get_json()
+    
 
 
 @bp.route('/download-employee-document', methods=('POST',))
