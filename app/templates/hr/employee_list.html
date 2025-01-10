@@ -49,7 +49,7 @@
   <div class="offcanvas-body small pt-0">
     <div class="container my-4">
         <!-- <h4>Profile Edit</h4> -->
-        <form>
+        <form id="editForm">
           <div class="mb-3">
             <input type="hidden" class="form-control" id="id" name="id">
           </div>
@@ -101,7 +101,7 @@
           </div>
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
-            <input type="text" class="form-control" id="email" name="maemailnager_name">
+            <input type="text" class="form-control" id="email" name="email">
           </div>
           <div class="mb-3">
             <label for="contact_detail" class="form-label">Contact Detail</label>
@@ -237,11 +237,36 @@ const downloadEmployeeDocument = async (document_id) => {
   return result
 }
 
+let updateEmployeeProfile = async (data) => {
+  const url = "{{ url_for('api.update_employee', _external=True) }}"
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }
+
+  console.log(data)
+
+  result = await fetch(url, options)
+
+  return result
+}
 
 
 flatpickr(".datepicker", {
     dateFormat: "d/M/Y", // Set New Zealand date format
-    allowInput: false // Allow manual input
+    allowInput: false, // Allow manual input
+    onChange: function (selectedDates, dateStr, instance) {
+      console.log(selectedDates)
+      console.log(instance)
+      const isoDate = selectedDates[0].toISOString()
+      if (selectedDates.length > 0) {
+        instance.value = isoDate
+      }
+    }
 });
 
 
@@ -254,7 +279,7 @@ flatpickr(".datepicker", {
 //    {id:5, name:"Margret Marmajuke", age:"16", col:"yellow", dob:"31/01/1999"},
 // ];
 
-let populateEditForm = function(rowData) {
+const populateEditForm = function(rowData) {
   document.getElementById('id').value = rowData.id
   document.getElementById('full_name').value = rowData.full_name
   document.getElementById('gender').value = rowData.gender
@@ -280,6 +305,66 @@ let populateEditForm = function(rowData) {
   document.getElementById('comments').value = rowData.comments
 }
 
+
+const submitEditData = async function() {
+
+  const form = document.getElementById('editForm')
+  const formData = new FormData(form)
+
+  const data = {}
+  formData.forEach((value, key) => {
+    if (key === 'id') {
+      data['employee_id'] = value
+    } 
+    else if (key.endsWith('date')) {
+      data[key] = nzDateToISO(value)
+    } else {
+      data[key] = value
+    }
+  })
+
+  console.log(data)
+
+  const response = await updateEmployeeProfile(data)
+
+  console.log('-----------edit------------')
+  console.log(response)
+}
+
+const submitEditDataTest = async function() {
+  const msg = 'clicked'
+  alert(msg)
+  return false
+}
+
+
+document.getElementById('editForm').addEventListener('submit', async function(event) {
+  event.preventDefault();
+
+  alert('submitted')
+
+  const form = document.getElementById('editForm')
+  const formData = new FormData(form)
+
+  const data = {}
+  formData.forEach((value, key) => {
+    if (key === 'id') {
+      data['employee_id'] = value
+    } 
+    else if (key.endsWith('date')) {
+      data[key] = nzDateToISO(value)
+    } else {
+      data[key] = value
+    }
+  })
+
+  console.log(data)
+
+  const response = await updateEmployeeProfile(data)
+
+  console.log('-----------edit------------')
+  console.log(response)
+})
 
 let rowActions = function(cell, formatterParams, onRendered) {
 
@@ -318,7 +403,8 @@ let rowActions = function(cell, formatterParams, onRendered) {
 
       documents = await fetchEmployeeDocuments(employee_id)
 
-      documentTable.replaceData(documents)
+      documentTable.setData(documents)
+      // documentTable.replaceData(documents)
     }
     
     actionsDiv.appendChild(documentButton)
@@ -486,7 +572,7 @@ let documentTable = new Tabulator("#document_table", {
   columns:[ //Define Table Columns
       {title:"Id", field:"id", visible:false},
       {title:"Documents", field:"original_file_name"},
-      {title:"Uploaded At", field:"created_at", formatter:"datetime", width: 150, formatterParams:{
+      {title:"Uploaded At", field:"created_at", formatter:"datetime", width: 170, formatterParams:{
           inputFormat:"yyyy-MM-dd HH:mm:ss",
           outputFormat:"dd/MMM/yyyy HH:mm:ss"
       }},
@@ -520,7 +606,8 @@ Dropzone.options.myDropzone = {
 
       const employee_id = document.getElementById('employee_id').value
       documents = await fetchEmployeeDocuments(employee_id)
-      documentTable.replaceData(documents)
+      documentTable.setData(documents)
+      // documentTable.replaceData(documents)
 
       notifySuccess('Uploaded successfully')
 

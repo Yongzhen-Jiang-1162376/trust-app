@@ -21,3 +21,8 @@ const notifyError = function(message) {
         position: 'right bottom'
     })
 }
+
+const nzDateToISO = function(dateString) {
+    const nzDate = DateTime.fromFormat(dateString, "dd/MMM/yyyy")
+    return nzDate.toISO()
+}

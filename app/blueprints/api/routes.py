@@ -140,9 +140,48 @@ def download_employee_document():
     return jsonify({'status': 'error', 'message': 'Document not existing.'}), 400
 
 
-@bp.route('/employee/update', methods=('POST',))
+@bp.route('/update-employee', methods=('POST',))
 def update_employee():
-    pass
+    print('entering in api function')
+    
+    data = request.get_json()    
+    # employee_id = data['employee_id']
+    
+    print(data)
+    
+    sql = '''
+        UPDATE hr_employee
+        SET full_name = :full_name,
+            gender = :gender,
+            position = :position,
+            portfolio_assigned = :portfolio_assigned,
+            manager_name = :manager_name,
+            employee_type = :employee_type,
+            mode_of_work = :mode_of_work,
+            date_of_birth = :date_of_birth,
+            nationality = :nationality,
+            email = :email,
+            contact_detail = :contact_detail,
+            address = :address,
+            start_date = :start_date,
+            resignation_date = :resignation_date,
+            last_working_date = :last_working_date,
+            trial_period = :trial_period,
+            trial_period_start_date = :trial_period_start_date,
+            hours_per_week = :hours_per_week,
+            volunteer_current_status = :volunteer_current_status,
+            feedback_performance_review = :feedback_performance_review,
+            leave_reason_id = :leave_reason,
+            comments = :comments'
+            updated_at = now()
+        WHERE id = :employee_id
+    '''
+    
+    db.session.execute(text(sql), data)
+    db.session.commit
+    
+    return jsonify({'status': 'success', 'message': 'Profile data updated successfully'}), 200
+
 
 @bp.route('/export-employee-data', methods=('GET',))
 def export_employee_data():
