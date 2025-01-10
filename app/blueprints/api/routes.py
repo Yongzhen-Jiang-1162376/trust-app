@@ -13,7 +13,7 @@ def remove_document(file_path):
 
 
 def remove_employee(employee_id):
-    remove_employee_document(employee_id)
+    remove_employee_documents(employee_id)
     remove_employee_document_records(employee_id)
     remove_employee_profile(employee_id)
 
@@ -27,8 +27,9 @@ def remove_employee_documents(employee_id):
 
     print(result)
 
-    for file_path in result:
-        remove_document(file_path)
+    for file_name in result:
+        file_path = os.path.join(current_app.config['UPLOAD_PATH'], file_name[0])
+        remove_document(file_path)   # result is list of tuple
 
 
 def remove_employee_document_records(employee_id):
@@ -169,7 +170,8 @@ def remove_employee_list():
     data = request.get_json()
     ids = data['employee_ids']
     
-    # [remove_employee(id) for id in ids]
+    # delete employee in backend
+    [remove_employee(id) for id in ids]
 
     return jsonify({'status': 'success', 'message': 'Employee data deleted successfully'}), 200   
 
