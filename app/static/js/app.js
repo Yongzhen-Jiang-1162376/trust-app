@@ -24,6 +24,19 @@ const notifyError = function(message) {
     })
 }
 
+const notifyWarning = function (message) {
+    new Notify({
+        status: 'warning',
+        title: '',
+        text: message,
+        effect: 'fade',
+        speed: 300,
+        autotimeout: 1500,
+        type: 'filled',
+        position: 'right bottom'
+    })
+}
+
 const nzDateToISODate = function(dateString) {
     let DateTime = luxon.DateTime
     const nzDate = DateTime.fromFormat(dateString, "dd/MMM/yyyy")

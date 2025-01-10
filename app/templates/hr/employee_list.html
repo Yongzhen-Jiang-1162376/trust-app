@@ -8,7 +8,7 @@
         <button type="button" class="btn btn-success btn-sm">Add new</button>
     </div>
     <div class="d-flex">
-        <button type="button" class="btn btn-danger btn-sm">Delete</button>
+        <button type="button" class="btn btn-danger btn-sm" onclick="deleteEmployees()">Delete</button>
         <button type="button" class="btn btn-secondary btn-sm ms-2">Export</button>
     </div>
 </div>
@@ -240,7 +240,7 @@ const downloadEmployeeDocument = async (document_id) => {
   return result
 }
 
-let updateEmployeeProfile = async (data) => {
+const updateEmployeeProfile = async (data) => {
   const url = "{{ url_for('api.update_employee', _external=True) }}"
 
   const options = {
@@ -350,7 +350,7 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
 
   const response = await updateEmployeeProfile(data)
 
-  if (response.status == 200) {
+  if (response.ok) {
     
     // hide offcanvas
     const offcanvasElement = document.getElementById('offcanvasEdit')
@@ -368,7 +368,7 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
   }
 })
 
-let rowActions = function(cell, formatterParams, onRendered) {
+const rowActions = function(cell, formatterParams, onRendered) {
 
     const row = cell.getRow();
     const actionsDiv = document.createElement("div");
@@ -415,7 +415,7 @@ let rowActions = function(cell, formatterParams, onRendered) {
 }
 
 
-let documentRowActions = function(cell, formatterParams, onRendered) {
+const documentRowActions = function(cell, formatterParams, onRendered) {
 
   const row = cell.getRow();
   const actionsDiv = document.createElement("div");
@@ -466,30 +466,53 @@ let documentRowActions = function(cell, formatterParams, onRendered) {
 }
 
 
-let rowNumberFormatter = function(cell, formatterParams, onRendered) {
+
+
+const rowNumberFormatter = function(cell, formatterParams, onRendered) {
     return cell.getRow().getPosition();
 }
 
-// const alertPlaceHolder = document.getElementById('uploadAlertPlaceHolder')
-// let appendAlert = (message, type) => {
-//   const wrapper = document.createElement('div')
-//   wrapper.innerHTML = [
-//     `<div class="alert alert-${type} alert-dismissible" role="alert">`,
-//     `   <div>${message}</div>`,
-//     '   <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>',
-//     '</div>'
-//   ].join('')
+const deleteEmployees = async function() {
+  let selectedRows = table.getSelectedRows()
+  if (selectedRows.length == 0) {
+    notifyWarning('No employee selected')
+    return
+  }
+  if (!confirm('Are you sure to delete these data?')) return
 
-//   document.getElementById('uploadAlertPlaceHolder').append(wrapper)
-// }
+  let ids = []
+  selectedRows.forEach(function(row) {
+    ids.push(row.getData().id)
+  })
 
+  const url = "{{ url_for('api.remove_employee_list', _external=True) }}"
+  const data = {
+    employee_ids: ids
+  }
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }
+
+  response = await fetch(url, options)
+
+  if (response.ok) {
+    const data = await response.json()
+    notifySuccess(data.message)
+  }
+}
 
 
 //create Tabulator on DOM element with id "example-table"
-let table = new Tabulator("#employee_table", {
+const table = new Tabulator("#employee_table", {
     minHeight: "650px", // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
     data: `{{ data | tojson }}`, //assign data to table
     layout:"fitColumns", //fit columns to width of table (optional)
+    selectableRows: true,
     pagination: "local",
     paginationSize: 6,
     paginationSizeSelector: [3, 6, 8, 10],
@@ -556,8 +579,9 @@ let table = new Tabulator("#employee_table", {
             hozAlign: 'center',
             frozen: true
         },
-    ],
+    ]
 });
+
 
 /*
 let documentData = [
@@ -566,7 +590,7 @@ let documentData = [
 ]
 */
 
-let documentTable = new Tabulator("#document_table", {
+const documentTable = new Tabulator("#document_table", {
   // minHeight: "100px",  // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
   data: [], //assign data to table
   layout:"fitColumns", //fit columns to width of table (optional)

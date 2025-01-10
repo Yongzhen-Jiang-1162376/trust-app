@@ -167,7 +167,11 @@ def remove_employee_document():
 @bp.route('/remove-employee-list', methods=('POST',))
 def remove_employee_list():
     data = request.get_json()
+    ids = data['employee_ids']
     
+    # [remove_employee(id) for id in ids]
+
+    return jsonify({'status': 'success', 'message': 'Employee data deleted successfully'}), 200   
 
 
 @bp.route('/download-employee-document', methods=('POST',))
