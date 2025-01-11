@@ -307,6 +307,7 @@ def create_employee():
     '''
     
     last_inserted_id = db.session.execute(text(sql)).scalar()
+    print('-------- last inserted id ----------')
     print(last_inserted_id)
     
     return jsonify({'status': 'success', 'message': 'Profile data updated successfully', 'employee_id': last_inserted_id}), 200
