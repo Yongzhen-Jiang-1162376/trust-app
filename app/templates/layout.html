@@ -31,24 +31,27 @@
 
   </head>
   <body>
-    <header class="navbar navbar-custom-color sticky-top flex-md-nowrap p-0 shadow">
+    <header class="navbar navbar-custom-color sticky-top justify-content-between justify-content-md-start flex-md-nowrap p-0 shadow">
       <a class="navbar-brand col-md-3 col-lg-2 me-0 px-3 fs-6 text-white" href="{{ url_for('main.index') }}">
           Tiaki Taonga Trust
       </a>
-    
-      <ul class="navbar-nav flex-row d-md-none">
-        <li class="nav-item text-nowrap">
-          <button class="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
-            <i class="bi bi-list"></i>
-          </button>
-        </li>
-      </ul>
-    
+
+        <div class="navbar-toggler d-none d-md-block" id="sidebar-toggler">
+          <i class="bi bi-list text-white"></i>
+        </div>
+      
+        <ul class="navbar-nav flex-row d-md-none">
+          <li class="nav-item text-nowrap">
+            <button class="nav-link px-3 text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu" aria-expanded="false" aria-label="Toggle navigation">
+              <i class="bi bi-list"></i>
+            </button>
+          </li>
+        </ul>
     </header>
         
     <div class="container-fluid">
       <div class="row" style="min-height: calc(100vh - 48px);">
-        <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary">
+        <div class="sidebar border border-right col-md-3 col-lg-2 p-0 bg-body-tertiary" id="sidebar">
           <div class="offcanvas-md offcanvas-end bg-body-tertiary" tabindex="-1" id="sidebarMenu" aria-labelledby="sidebarMenuLabel">
             <div class="offcanvas-header">
               <h5 class="offcanvas-title" id="sidebarMenuLabel">Tiaki Taonga Trust</h5>
@@ -84,7 +87,7 @@
           </div>
         </div>
 
-        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4" id="main">
           {% block content %}{% endblock %}
         </main>
     </div>
@@ -94,6 +97,15 @@
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     
     <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+
+    <script>
+      const sidebarToggler = document.getElementById('sidebar-toggler')
+      sidebarToggler.addEventListener('click', function() {
+        document.getElementById('sidebar').classList.toggle('d-none');
+        document.getElementById('main').classList.toggle('col-lg-10')
+        document.getElementById('main').classList.toggle('col-md-9')
+      })
+    </script>
 
     {% block scripts %}{% endblock %}
 
