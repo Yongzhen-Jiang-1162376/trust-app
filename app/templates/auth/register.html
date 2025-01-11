@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tiaki Taonga Trust</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='libs/bootstrap/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sign-in-up.css') }}">
+</head>
+<body class="d-flex align-items-center py-4 bg-body-tertiary">
+    <main class="form-signup w-100 m-auto">
+        <form action="/auth/register" method="post">
+            <!-- <img class="mb-4" src="../assets/brand/bootstrap-logo.svg" alt="" width="72" height="57"> -->
+            <h1>Tiaki Taonga Trust</h1> 
+            <h5 class="mb-3 fw-normal">Please sign up</h5>
+        
+            <div class="form-floating">
+                <input type="name" class="form-control" id="floatingName" placeholder="name" name="name">
+                <label for="floatingName">Name</label>
+            </div>
+            <div class="form-floating">
+                <input type="email" class="form-control" id="floatingEmail" placeholder="name@example.com" name="email">
+                <label for="floatingEmail">Email address</label>
+            </div>
+            <div class="form-floating">
+                <input type="password" class="form-control" id="floatingPassword" placeholder="Password" name="password">
+                <label for="floatingPassword">Password</label>
+            </div>
+        
+            <!-- <div class="form-check text-start my-3">
+                <input class="form-check-input" type="checkbox" value="remember-me" id="flexCheckDefault">
+                <label class="form-check-label" for="flexCheckDefault">
+                    Remember me
+                </label>
+            </div> -->
+            <button class="btn btn-primary w-100 py-2" type="submit">Sign up</button>
+
+            <div class="text-start my-3">
+                <a href="{{ url_for('auth.login') }}">Sign In</a>
+            </div>
+
+            <p class="mt-5 mb-3 text-body-secondary">&copy; 2025</p>
+        </form>
+    </main>
+
+    <script src="{{ url_for('static', filename='libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+</body>
+</html>

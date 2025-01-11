@@ -44,7 +44,7 @@ def create_app(test_config=None):
     
     with app.app_context():
         from app.models.auth.models import User
-        from app.models.employee.models import Employee, EmployeeDocument, LeaveReason
+        from app.models.hr.models import Employee, EmployeeDocument, LeaveReason
     
     @login_manager.user_loader
     def load_user(user_id):

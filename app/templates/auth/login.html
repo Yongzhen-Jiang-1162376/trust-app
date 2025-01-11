@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Tiaki Taonga Trust</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='libs/bootstrap/css/bootstrap.min.css') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/sign-in.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/sign-in-up.css') }}">
 </head>
 <body class="d-flex align-items-center py-4 bg-body-tertiary">
     <main class="form-signin w-100 m-auto">
@@ -30,6 +30,11 @@
                 </label>
             </div>
             <button class="btn btn-primary w-100 py-2" type="submit">Sign in</button>
+
+            <div class="text-start my-3">
+                <a href="{{ url_for('auth.register') }}">Sign Up</a>
+            </div>
+
             <p class="mt-5 mb-3 text-body-secondary">&copy; 2025</p>
         </form>
     </main>

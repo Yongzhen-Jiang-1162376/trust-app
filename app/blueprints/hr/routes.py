@@ -1,7 +1,7 @@
 from flask import render_template, request, jsonify
 from app.blueprints.hr import bp
-from app.models.employee import Employee, LeaveReason
-from app.schemas.employee import EmployeeSchema
+from app.models.hr import Employee, LeaveReason
+from app.schemas.hr import EmployeeSchema
 from sqlalchemy import select, text
 from app.extensions import db
 from marshmallow import EXCLUDE
