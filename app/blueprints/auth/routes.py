@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for
-from flask_login import login_required
+from flask_login import login_user, logout_user, login_required
 from app.blueprints.auth import bp
 from app.extensions import db
 from app.models.auth.models import User
@@ -7,9 +7,10 @@ from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
-@bp.route('/')
-def index():
-    return 'auth.index'
+# @bp.route('/')
+# def index():
+#     return 'auth.index'
+
 
 @bp.route('/login', methods=('GET', 'POST'))
 def login():
@@ -19,11 +20,21 @@ def login():
         password = request.form.get('password')
         remember = True if request.form.get('remember') else False
 
+        print(email, password, remember)
+
         user = User.query.filter_by(email=email).first()
 
+        print('--------- user ---------')
+        print(user)
+        print(check_password_hash(user.password, password) if user else False)
 
+        if not user or not check_password_hash(user.password, password):
+            error = 'Incorrect email or password'
+        else:
+            login_user(user, remember=remember)
+            return redirect(url_for('main.index'))
     
-    return render_template('auth/login.html')
+    return render_template('auth/login.html', error=error)
 
 
 @bp.route('/register', methods=('GET', 'POST'))
@@ -34,6 +45,9 @@ def register():
         password = request.form.get('password')
 
         user = User.query.filter_by(email=email).first()
+
+        print('---------- user -----------')
+        print(user)
 
         if user:
             return redirect(url_for('auth.login'))
@@ -46,13 +60,15 @@ def register():
             (
                 email,
                 password,
-                full_name
+                full_name,
+                created_at
             )
             VALUES
             (
                 :email,
                 :password,
-                :full_name
+                :full_name,
+                now()
             )
         '''
 
@@ -65,7 +81,13 @@ def register():
         db.session.execute(text(sql), params)
         db.session.commit()
 
-        return redirect('auth.login')
+        return redirect(url_for('auth.login'))
     
     return render_template('auth/register.html')
 
+
+@bp.route('/logout')
+@login_required
+def logout():
+    logout_user()
+    return redirect(url_for('auth.login'))

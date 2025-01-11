@@ -7,9 +7,11 @@ from app.extensions import db
 from marshmallow import EXCLUDE
 from marshmallow.exceptions import ValidationError
 from pprint import pprint
+from flask_login import login_required
 
 
 @bp.route('/employees', methods=('GET',))
+@login_required
 def employee_list():
     
     columns = [
@@ -156,6 +158,7 @@ def employee_list():
 
 
 @bp.route('/employees/create', methods=('GET', 'POST'))
+@login_required
 def employee_create():
     error = None
     

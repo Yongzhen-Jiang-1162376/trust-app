@@ -4,9 +4,10 @@ from typing import Optional
 from sqlalchemy import Column, func, ForeignKey, Integer, String, DateTime, Boolean, text
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import false, true
+from flask_login import UserMixin
 
 
-class User(db.Model):
+class User(UserMixin, db.Model):
     __tablename__ = 'auth_user'
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
@@ -23,4 +24,4 @@ class User(db.Model):
     updated_by_id: Mapped[Optional[int]]
 
     def __repr__(self):
-        return f'<User {self.username}>'
+        return f'<User {self.email}>'
