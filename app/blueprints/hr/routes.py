@@ -4,6 +4,9 @@ from app.models.employee import Employee, LeaveReason
 from app.schemas.employee import EmployeeSchema
 from sqlalchemy import select, text
 from app.extensions import db
+from marshmallow import EXCLUDE
+from marshmallow.exceptions import ValidationError
+from pprint import pprint
 
 
 @bp.route('/employees', methods=('GET',))
@@ -107,34 +110,6 @@ def employee_list():
             'name': 'Comments'
         }
     ]
-    
-    # stmt = select(
-    #     Employee.id,
-    #     Employee.full_name,
-    #     Employee.gender,
-    #     Employee.position,
-    #     Employee.portfolio_assigned,
-    #     Employee.manager_name,
-    #     Employee.employee_type,
-    #     Employee.mode_of_work,
-    #     Employee.date_of_birth,
-    #     Employee.nationality,
-    #     Employee.email,
-    #     Employee.contact_detail,
-    #     Employee.address,
-    #     Employee.start_date,
-    #     Employee.resignation_date,
-    #     Employee.last_working_date,
-    #     Employee.trial_period,
-    #     Employee.trial_period_start_date,
-    #     Employee.hours_per_week,
-    #     Employee.volunteer_current_status,
-    #     Employee.feedback_performance_review,
-    #     Employee.leave_reason_id,
-    #     LeaveReason.reason,
-    #     Employee.comments
-    # ).join(LeaveReason, Employee.leave_reason_id == LeaveReason.id)
-
 
     sql = '''
         SELECT
@@ -181,5 +156,42 @@ def employee_list():
 
 
 @bp.route('/employees/create', methods=('GET', 'POST'))
-def create_employee():
-    pass
+def employee_create():
+    error = None
+    
+    print('entering....')
+    print(request.method)
+    
+    allow_none_fields = [
+        'date_of_birth', 
+        'start_date', 
+        'resignation_date', 
+        'last_working_date', 
+        'trial_period_start_date',
+        'hours_per_week',
+        'trial_period'
+    ]
+    
+    if (request.method == 'POST'):
+        emp_schema = EmployeeSchema(unknown=EXCLUDE)
+        
+        formData = request.form.to_dict()
+        
+        
+        
+        for key in formData.keys():
+            if key in allow_none_fields and formData[key] == '':
+                formData[key] = None
+                
+        files = request.files
+        
+        pprint(formData)
+        pprint(files)
+        
+        try:
+            emp_data = emp_schema.load(formData)
+        
+        except ValidationError as err:
+            error = err.messages
+    
+    return render_template('hr/employee_create.html', error=error)

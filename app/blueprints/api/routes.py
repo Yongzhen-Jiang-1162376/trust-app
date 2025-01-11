@@ -239,6 +239,72 @@ def update_employee():
     return jsonify({'status': 'success', 'message': 'Profile data updated successfully'}), 200
 
 
-@bp.route('/export-employee-data', methods=('GET',))
-def export_employee_data():
-    pass
+@bp.route('/create-employee', methods=('POST',))
+def update_employee():
+    print('entering creating employee api function')
+    
+    data = request.get_json()
+    # employee_id = data['employee_id']
+
+    sql = '''
+        INSERT INTO hr_employee
+        (
+            full_name, 
+            gender,
+            position,
+            portfolio_assigned,
+            manager_name,
+            employee_type,
+            mode_of_work,
+            date_of_birth,
+            nationality,
+            email,
+            contact_detail,
+            address,
+            start_date,
+            resignation_date,
+            last_working_date,
+            trial_period,
+            trial_period_start_date,
+            hours_per_week,
+            volunteer_current_status,
+            feedback_performance_review,
+            leave_reason_id,
+            comments
+        )
+        VALUES
+        (
+            :full_name, 
+            :gender,
+            :position,
+            :portfolio_assigned,
+            :manager_name,
+            :employee_type,
+            :mode_of_work,
+            :date_of_birth,
+            :nationality,
+            :email,
+            :contact_detail,
+            :address,
+            :start_date,
+            :resignation_date,
+            :last_working_date,
+            :trial_period,
+            :trial_period_start_date,
+            :hours_per_week,
+            :volunteer_current_status,
+            :feedback_performance_review,
+            :leave_reason_id,
+            :comments
+        )
+    '''
+    
+    db.session.execute(text(sql), data)
+    db.session.commit()
+    
+    return jsonify({'status': 'success', 'message': 'Profile data updated successfully'}), 200
+
+
+# @bp.route('/export-employee-data', methods=('GET',))
+# def export_employee_data():
+#     pass

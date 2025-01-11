@@ -1,0 +1,215 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<h3>Add Employee</h3>
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <form id="createForm">
+                <div class="mb-3">
+                    <input type="hidden" class="form-control" id="id" name="id">
+                </div>
+                <div class="mb-3">
+                    <label for="full_name" class="form-label">Full Name</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name">
+                </div>
+                <div class="mb-3">
+                    <label for="gender" class="form-label">Gender</label>
+                    <select type="text" class="form-select" id="gender" name="gender">
+                    <option value="Female">Female</option>
+                    <option value="Male">Male</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="position" class="form-label">Position</label>
+                    <input type="text" class="form-control" id="position" name="position">
+                </div>
+                <div class="mb-3">
+                    <label for="portfolio_assigned" class="form-label">Portfolio Assigned</label>
+                    <input type="text" class="form-control" id="portfolio_assigned" name="portfolio_assigned">
+                </div>
+                <div class="mb-3">
+                    <label for="manager_name" class="form-label">Manager Name</label>
+                    <input type="text" class="form-control" id="manager_name" name="manager_name">
+                </div>
+                <div class="mb-3">
+                    <label for="employee_type" class="form-label">Employee Type</label>
+                    <select type="text" class="form-select" id="employee_type" name="employee_type">
+                    <option value="Employee">Employee</option>
+                    <option value="Volunteer">Volunteer</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="mode_of_work" class="form-label">Mode of Work</label>
+                    <select type="text" class="form-select" id="mode_of_work" name="mode_of_work">
+                    <option value="Onsite">Onsite</option>
+                    <option value="Remote">Remote</option>
+                    <option value="Hybrid">Hybrid</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="date_of_birth" class="form-label">Date of Birth</label>
+                    <input type="date" class="form-control datepicker" id="date_of_birth" name="date_of_birth" lang="en-NZ">
+                </div>
+                <div class="mb-3">
+                    <label for="nationality" class="form-label">Nationality</label>
+                    <input type="text" class="form-control" id="nationality" name="nationality">
+                </div>
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="text" class="form-control" id="email" name="email">
+                </div>
+                <div class="mb-3">
+                    <label for="contact_detail" class="form-label">Contact Detail (phone)</label>
+                    <input type="text" class="form-control" id="contact_detail" name="contact_detail">
+                </div>
+                <div class="mb-3">
+                    <label for="address" class="form-label">Address</label>
+                    <input type="text" class="form-control" id="address" name="address">
+                </div>
+                <div class="mb-3">
+                    <label for="start_date" class="form-label">Start Date</label>
+                    <input type="date" class="form-control datepicker" id="start_date" name="start_date" lang="en-NZ">
+                </div>
+                <div class="mb-3">
+                    <label for="resignation_date" class="form-label">Resignation Date</label>
+                    <input type="date" class="form-control datepicker" id="resignation_date" name="resignation_date" lang="en-NZ">
+                </div>
+                <div class="mb-3">
+                    <label for="last_working_date" class="form-label">Last Working Date</label>
+                    <input type="text" class="form-control datepicker" id="last_working_date" name="last_working_date">
+                </div>
+                <div class="mb-3">
+                    <label for="trial_period_start_date" class="form-label">Trial Period Start Day</label>
+                    <input type="text" class="form-control datepicker" id="trial_period_start_date" name="trial_period_start_date">
+                </div>
+                <div class="mb-3">
+                    <label for="trial_period" class="form-label">Trial Period</label>
+                    <input type="number" class="form-control" id="trial_period" name="trial_period">
+                </div>
+                <div class="mb-3">
+                    <label for="hours_per_week" class="form-label">Hours per Week</label>
+                    <input type="number" class="form-control" id="hours_per_week" name="hours_per_week">
+                </div>
+                <div class="mb-3">
+                    <label for="volunteer_current_status" class="form-label">Volunteer Status</label>
+                    <input type="text" class="form-control" id="volunteer_current_status" name="volunteer_current_status">
+                </div>
+                <div class="mb-3">
+                    <label for="feedback_performance_review" class="form-label">Feedback & Performance Review</label>
+                    <textarea class="form-control h-100" rows="5" id="feedback_performance_review" name="feedback_performance_review"></textarea>
+                </div>
+                <div class="mb-3">
+                    <label for="leave_reason_id" class="form-label">Leave Reason</label>
+                    <select type="text" class="form-select" id="leave_reason_id" name="leave_reason_id">
+                    <option value=0></option>
+                    <option value=1>Personal</option>
+                    <option value=2>Family</option>
+                    <option value=3>Relocation</option>
+                    </select>
+                </div>
+                <input type="hidden" class="form-control" id="leave_reason" name="leave_reason">
+                <div class="mb-3">
+                    <label for="comments" class="form-label">Comments</label>
+                    <input type="text" class="form-control" id="comments" name="comments">
+                </div>
+
+                <div class="dropzone text-center" id="create-dropzone"></div>
+
+                <div>
+                    {% if(error) %}
+                        {{error}}
+                    {% endif %}
+                </div>
+
+                <button type="button" id="submitButton" class="btn btn-primary form-control mt-3 mb-5">Submit</button>
+            </form>
+
+            <input type="text" id="employee_id" class="d-none" disabled>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+
+flatpickr(".datepicker", {
+    dateFormat: "d/M/Y", // Set New Zealand date format
+    allowInput: false, // Allow manual input
+    onChange: function (selectedDates, dateStr, instance) {
+        console.log(selectedDates)
+        console.log(instance)
+        const isoDate = selectedDates[0].toISOString()
+        if (selectedDates.length > 0) {
+        instance.value = isoDate
+        }
+    }
+});
+
+Dropzone.autoDiscover = true;
+
+Dropzone.options.createDropzone = {
+    paramName: 'file',
+    url: "{{ url_for('hr.employee_create') }}",
+    autoProcessQueue: false,
+    init: function() {
+        this.on('success', function (file, response) {
+            console.log(response.message)
+        });
+
+        this.on('error', function(file, response) {
+            this.removeAllFiles(true)
+            appendAlert(response.message, 'danger')
+        })
+
+        this.on('queuecomplete', async function() {
+            this.removeAllFiles(true)
+
+            const employee_id = document.getElementById('employee_id').value
+            documents = await fetchEmployeeDocuments(employee_id)
+            documentTable.setData(documents)
+
+            notifySuccess('Uploaded successfully')
+        })
+
+        this.on('sending', function(file, xhr, formData) {
+            const employee_id = document.getElementById('employee_id').value
+            formData.append('employee_id', employee_id)
+        })
+    }
+}
+
+
+
+
+document.getElementById("submitButton").addEventListener('click', async function() {
+    console.log('clicked')
+
+    // submit form date and return new employee id
+
+    // set employee id in the hidden input
+
+    // if success call processQueue to upload, otherwise notify errors
+    const instance = Dropzone.forElement('#create-dropzone')
+    console.log(instance)
+
+    if (instance.getQueuedFiles().length > 0) {         // there are files to upload
+        instance.processQueue()
+    }
+    else {                                              // no files to upload
+        // return to employee list page
+        
+        window.location.href = '/hr/employees'
+        notifySuccess('Employee data created successfully')
+    }
+
+})
+
+</script>
+
+
+{% endblock %}
