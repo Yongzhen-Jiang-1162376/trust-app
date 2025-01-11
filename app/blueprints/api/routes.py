@@ -240,7 +240,7 @@ def update_employee():
 
 
 @bp.route('/create-employee', methods=('POST',))
-def update_employee():
+def create_employee():
     print('entering creating employee api function')
     
     data = request.get_json()
@@ -302,7 +302,14 @@ def update_employee():
     db.session.execute(text(sql), data)
     db.session.commit()
     
-    return jsonify({'status': 'success', 'message': 'Profile data updated successfully'}), 200
+    sql = '''
+        SELECT LAST_INSERT_ID()
+    '''
+    
+    last_inserted_id = db.session.execute(text(sql)).scalar()
+    print(last_inserted_id)
+    
+    return jsonify({'status': 'success', 'message': 'Profile data updated successfully', 'employee_id': last_inserted_id}), 200
 
 
 # @bp.route('/export-employee-data', methods=('GET',))
