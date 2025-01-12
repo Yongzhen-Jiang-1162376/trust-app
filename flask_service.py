@@ -27,7 +27,7 @@ class FlaskAppService(win32serviceutil.ServiceFramework):
 
     def run(self):
         venv_path = r"C:\root\dev\src\trust-app\venv\Scripts"
-        app_path = r"C:\root\dev\src\trust-app\app.py"
+        app_path = r"C:\root\dev\src\trust-app\myapp.py"
 
         # Activate virtual environment and run Flask app using Waitress
         self.process = Popen(
