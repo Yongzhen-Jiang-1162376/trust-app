@@ -1,13 +1,38 @@
 import logging
 from flask import Flask
 from instance.config import Config
+from dotenv import load_dotenv
 from app.extensions import db, login_manager, migrate, ma
 import os
 
 
 def create_app(test_config=None):
+    load_dotenv()
+    
+    # print(os.environ.get('SECRET_KEY'))
+    # print(os.environ.get('DATABASE_URI'))
+    
     app = Flask(__name__, instance_relative_config=True)
+    # app = Flask(__name__)
+    
+    # print(Config())
+    
     app.config.from_object(Config)
+    
+    # configDict = {
+    #     'SECRET_KEY': os.environ.get('SECRET_KEY'),
+    #     'SQLALCHEMY_DATABASE_URI': os.environ.get('DATABASE_URI')
+    # }
+    
+    # app.config.from_envvar('DATABASE_URI')
+    # app.config.from_envvar('DATABASE_URI')
+    
+    # app.config.SECRET_KEY = os.environ.get('SECRET_KEY')
+    # app.config.SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URI')
+    
+    # app.config.from_mapping(configDict)
+    
+    # print(app.config)
     
     if test_config:
         app.config.from_mapping(test_config)
