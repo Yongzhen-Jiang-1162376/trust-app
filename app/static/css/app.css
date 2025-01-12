@@ -32,6 +32,10 @@
   font-size: .75rem;
 }
 
+#sidebar-toggler {
+  cursor: pointer;
+}
+
 /*
   * Navbar
   */
