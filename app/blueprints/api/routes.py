@@ -241,10 +241,19 @@ def update_employee():
 
 @bp.route('/create-employee', methods=('POST',))
 def create_employee():
-    print('entering creating employee api function')
+    # print('entering creating employee api function')
     
     data = request.get_json()
     # employee_id = data['employee_id']
+    
+    # print('---------------- new data here (full name) ------------------')
+    # print(data)
+    # print(data['full_name'])
+    
+    full_name = data.get('full_name')
+    if full_name is None or full_name == '':
+        return jsonify({'status': 'error', 'message': 'Name is empty'}), 400
+
 
     sql = '''
         INSERT INTO hr_employee
@@ -307,10 +316,10 @@ def create_employee():
     '''
     
     last_inserted_id = db.session.execute(text(sql)).scalar()
-    print('-------- last inserted id ----------')
-    print(last_inserted_id)
+    # print('-------- last inserted id ----------')
+    # print(last_inserted_id)
     
-    return jsonify({'status': 'success', 'message': 'Profile data updated successfully', 'employee_id': last_inserted_id}), 200
+    return jsonify({'status': 'success', 'message': 'Profile data added successfully', 'employee_id': last_inserted_id}), 200
 
 
 # @bp.route('/export-employee-data', methods=('GET',))

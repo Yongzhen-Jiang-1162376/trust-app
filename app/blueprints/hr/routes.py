@@ -162,8 +162,8 @@ def employee_list():
 def employee_create():
     error = None
     
-    print('entering....')
-    print(request.method)
+    # print('entering....')
+    # print(request.method)
     
     allow_none_fields = [
         'date_of_birth', 
@@ -180,16 +180,14 @@ def employee_create():
         
         formData = request.form.to_dict()
         
-        
-        
         for key in formData.keys():
             if key in allow_none_fields and formData[key] == '':
                 formData[key] = None
                 
         files = request.files
         
-        pprint(formData)
-        pprint(files)
+        # pprint(formData)
+        # pprint(files)
         
         try:
             emp_data = emp_schema.load(formData)

@@ -22,7 +22,7 @@ class Employee(db.Model):
     position: Mapped[Optional[str]] = mapped_column(String(255))
     mode_of_work: Mapped[WorkModeTpye]
     volunteer_current_status: Mapped[Optional[str]] = mapped_column(String(255))
-    hours_per_week: Mapped[Optional[float]]
+    hours_per_week: Mapped[Optional[str]] = mapped_column(String(255))
     portfolio_assigned: Mapped[Optional[str]] = mapped_column(String(255))
     manager_name: Mapped[Optional[str]] = mapped_column(String(255))
     address: Mapped[Optional[str]] = mapped_column(String(255))
@@ -30,7 +30,7 @@ class Employee(db.Model):
     nationality: Mapped[Optional[str]] = mapped_column(String(255))
     contact_detail: Mapped[Optional[str]] = mapped_column(String(255))
     email: Mapped[Optional[str]] = mapped_column(String(255))
-    trial_period: Mapped[Optional[float]]
+    trial_period: Mapped[Optional[str]] = mapped_column(String(255))
     resignation_date: Mapped[Optional[date]]
     last_working_date: Mapped[Optional[date]]
     feedback_performance_review: Mapped[Optional[str]] = mapped_column(Text)
