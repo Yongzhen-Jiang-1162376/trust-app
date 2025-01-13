@@ -600,13 +600,77 @@ const table = new Tabulator("#employee_table", {
     columns:[ //Define Table Columns
         {title:"No.", field:"row_num", width:80, formatter:rowNumberFormatter, frozen: true, download: false},
         {title:"Internal Id", field:"id", width:100, visible: false, frozen: true, download: false},
-        {title:"Full Name", field:"full_name", width:150, frozen: true},
-        {title:"Gender", field:"gender", width:100},
-        {title:"Position", field:"position", width:150},
-        {title:"Portfolio Assigned", field:"portfolio_assigned", width:300},
+        {title:"Full Name", field:"full_name", width:150, frozen: true, headerFilter:"input"},
+        {
+          title:"Gender", 
+          field:"gender", 
+          width:100, 
+          editor:"list", 
+          editorParams:{
+            values:{
+              "Male":"Male", 
+              "Female":"Female",
+            }
+          }, 
+          headerFilter:true, 
+          headerFilterParams:{
+            values:{
+              "Male":"Male", 
+              "Female":"Female",
+            }
+          },
+          headerFilterFunc: function(headerValue, rowValue) {
+            if (headerValue === rowValue) {
+              return true
+            }
+            else {
+              return false
+            }
+          }
+        },
+        {title:"Position", field:"position", width:150, headerFilter:"input"},
+        {title:"Portfolio Assigned", field:"portfolio_assigned", width:300, headerFilter:"input"},
         {title:"Manager Name", field:"manager_name", width:150},
-        {title:"Employee Type", field:"employee_type", width:150},
-        {title:"Mode of Work", field:"mode_of_work", width:150},
+        {
+          title:"Employee Type", 
+          field:"employee_type", 
+          width:150,
+          editor:"list", 
+          editorParams:{
+            values:{
+              "Employee":"Employee", 
+              "Volunteer":"Volunteer",
+            }
+          }, 
+          headerFilter:true, 
+          headerFilterParams:{
+            values:{
+              "Employee":"Employee", 
+              "Volunteer":"Volunteer",
+            }
+          }
+        },
+        {
+          title:"Mode of Work", 
+          field:"mode_of_work", 
+          width:150,
+          editor:"list", 
+          editorParams:{
+            values:{
+              "Onsite":"Onsite", 
+              "Remote":"Remote",
+              "Hybrid":"Hybrid"
+            }
+          }, 
+          headerFilter:true, 
+          headerFilterParams:{
+            values:{
+              "Onsite":"Onsite", 
+              "Remote":"Remote",
+              "Hybrid":"Hybrid"
+            }
+          }
+        },
         {
           title:"Date of Birth", 
           field:"date_of_birth", 
@@ -625,7 +689,7 @@ const table = new Tabulator("#employee_table", {
           }
           */
         },
-        {title:"Nationality", field:"nationality", width:150},
+        {title:"Nationality", field:"nationality", width:150, headerFilter:"input"},
         {title:"Email", field:"email", width:200},
         {title:"Contact Detail", field:"contact_detail", width:200},
         {title:"Address", field:"address", width:250},
