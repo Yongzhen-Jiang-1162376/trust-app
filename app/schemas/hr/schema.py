@@ -26,11 +26,6 @@ class EmployeeSchema(Schema):
     resignation_date = fields.Date(allow_none=True)
     last_working_date = fields.Date(allow_none=True)
     feedback_performance_review = fields.Str()
-    leave_reason_id = fields.Int()
+    # leave_reason_id = fields.Int()
     leave_reason = fields.Str()
     comments = fields.Str()
-
-
-class LeaveReasonSchema(Schema):
-    id = fields.Int(dump_only=True)
-    reason = fields.Str(required=True)

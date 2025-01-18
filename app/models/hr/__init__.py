@@ -1,1 +1,1 @@
-from .models import Employee, EmployeeDocument, LeaveReason
+from .models import Employee, EmployeeDocument

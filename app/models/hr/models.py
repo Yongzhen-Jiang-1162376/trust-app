@@ -34,8 +34,8 @@ class Employee(db.Model):
     resignation_date: Mapped[Optional[date]]
     last_working_date: Mapped[Optional[date]]
     feedback_performance_review: Mapped[Optional[str]] = mapped_column(Text)
-    leave_reason_id: Mapped[Optional[int]] = mapped_column(ForeignKey('hr_leave_reason.id'))
-    leave_reason: Mapped[Optional['LeaveReason']] = relationship()
+    # leave_reason_id: Mapped[Optional[int]] = mapped_column(ForeignKey('hr_leave_reason.id'))
+    leave_reason: Mapped[Optional[str]] = mapped_column(String(255))
     comments: Mapped[Optional[str]] = mapped_column(String(255))
     documents: Mapped[list['EmployeeDocument']] = relationship()
     created_at: Mapped[Optional[datetime]] = mapped_column(DateTime, insert_default=func.now())
@@ -47,18 +47,18 @@ class Employee(db.Model):
         return f'<Employee {self.fullname}>'
 
 
-class LeaveReason(db.Model):
-    __tablename__ = 'hr_leave_reason'
+# class LeaveReason(db.Model):
+#     __tablename__ = 'hr_leave_reason'
     
-    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    reason: Mapped[str] = mapped_column(String(255), unique=True)
-    created_at: Mapped[Optional[datetime]] = mapped_column(DateTime, insert_default=func.now())
-    created_by_id: Mapped[Optional[int]]
-    updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=func.now())
-    updated_by_id: Mapped[Optional[int]]
+#     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+#     reason: Mapped[str] = mapped_column(String(255), unique=True)
+#     created_at: Mapped[Optional[datetime]] = mapped_column(DateTime, insert_default=func.now())
+#     created_by_id: Mapped[Optional[int]]
+#     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=func.now())
+#     updated_by_id: Mapped[Optional[int]]
     
-    def __repr__(self):
-        return f'<LeaveReason {self.reason}>'
+#     def __repr__(self):
+#         return f'<LeaveReason {self.reason}>'
 
 
 class EmployeeDocument(db.Model):

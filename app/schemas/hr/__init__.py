@@ -1,1 +1,1 @@
-from .schema import EmployeeSchema, LeaveReasonSchema
+from .schema import EmployeeSchema

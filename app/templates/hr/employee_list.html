@@ -145,7 +145,7 @@
             <label for="feedback_performance_review" class="form-label">Feedback & Performance Review</label>
             <textarea class="form-control h-100" rows="5" id="feedback_performance_review" name="feedback_performance_review"></textarea>
           </div>
-          <div class="mb-3">
+          <!-- <div class="mb-3">
             <label for="leave_reason_id" class="form-label">Leave Reason</label>
             <select type="text" class="form-select" id="leave_reason_id" name="leave_reason_id">
               <option value=0></option>
@@ -153,8 +153,11 @@
               <option value=2>Family</option>
               <option value=3>Relocation</option>
             </select>
+          </div> -->
+          <div class="mb-3">
+            <label for="leave_reason" class="form-label">Leave Reason</label>
+            <input type="text" class="form-control" id="leave_reason" name="leave_reason">
           </div>
-          <input type="hidden" class="form-control" id="leave_reason" name="leave_reason">
           <div class="mb-3">
             <label for="comments" class="form-label">Comments</label>
             <input type="text" class="form-control" id="comments" name="comments">
@@ -177,8 +180,6 @@
 
 const fetchEmployeeDocuments = async (employee_id) => {
   const url = "{{ url_for('api.get_employee_documents', _external=True) }}"
-  // console.log(url)
-
   const data = {
     employee_id: employee_id
   }
@@ -195,10 +196,6 @@ const fetchEmployeeDocuments = async (employee_id) => {
   const result = await response.json()
 
   return result
-  // .then(json => {
-  //   console.log('inside fetch:')
-  //   console.log(json)
-  // })
 }
 
 const removeEmployeeDocument = async (document_id) => {
@@ -252,8 +249,6 @@ const updateEmployeeProfile = async (data) => {
     },
     body: JSON.stringify(data)
   }
-
-  console.log(data)
 
   result = await fetch(url, options)
 
@@ -325,8 +320,6 @@ flatpickr(".datepicker", {
     dateFormat: "d/M/Y", // Set New Zealand date format
     allowInput: false, // Allow manual input
     onChange: function (selectedDates, dateStr, instance) {
-      console.log(selectedDates)
-      console.log(instance)
       const isoDate = selectedDates[0].toISOString()
       if (selectedDates.length > 0) {
         instance.value = isoDate
@@ -366,18 +359,18 @@ const populateEditForm = function(rowData) {
   document.getElementById('hours_per_week').value = rowData.hours_per_week
   document.getElementById('volunteer_current_status').value = rowData.volunteer_current_status
   document.getElementById('feedback_performance_review').value = rowData.feedback_performance_review
-  document.getElementById('leave_reason_id').value = rowData.leave_reason_id
+  // document.getElementById('leave_reason_id').value = rowData.leave_reason_id
   document.getElementById('leave_reason').value = rowData.leave_reason
   document.getElementById('comments').value = rowData.comments
 }
 
-document.getElementById('leave_reason_id').addEventListener('change', function(event) {
-  const selectElement = event.target
-  const selectedValue = selectElement.value
-  const selectedText = selectElement.options[selectElement.selectedIndex].text
+// document.getElementById('leave_reason_id').addEventListener('change', function(event) {
+//   const selectElement = event.target
+//   const selectedValue = selectElement.value
+//   const selectedText = selectElement.options[selectElement.selectedIndex].text
 
-  document.getElementById('leave_reason').value = selectedText
-})
+//   document.getElementById('leave_reason').value = selectedText
+// })
 
 
 document.getElementById('editForm').addEventListener('submit', async function(event) {
@@ -386,9 +379,6 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
   const form = document.getElementById('editForm')
   const formData = new FormData(form)
   const employee_id = formData.get('id')
-
-  console.log('employee_id')
-  console.log(employee_id)
 
   const date_fields = ['start_date', 'trial_period_start_date', 'date_of_birth', 'resignation_date', 'last_working_date']
 
@@ -407,9 +397,6 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
     }
   })
 
-  console.log('---------- data ------------')
-  console.log(data)
-
   const response = await updateEmployeeProfile(data)
 
   if (response.ok) {
@@ -420,8 +407,6 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
     offcanvasInstance.hide()
 
     // update table row data
-    console.log('------------before update table')
-    console.log(data)
     table.updateRow(employee_id, data)
 
     // notify
@@ -430,6 +415,7 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
 })
 
 const rowActions = function(cell, formatterParams, onRendered) {
+    // e.stopPropagation();
 
     const row = cell.getRow();
     const actionsDiv = document.createElement("div");
@@ -441,8 +427,8 @@ const rowActions = function(cell, formatterParams, onRendered) {
     editButton.setAttribute("data-bs-toggle", "offcanvas")
     editButton.setAttribute("data-bs-target", "#offcanvasEdit")
     editButton.setAttribute("aria-controls", "offcanvasEdit")
-    editButton.onclick = function() {
-        console.log(row.getData())
+    editButton.onclick = function(e) {
+        e.stopPropagation();
         populateEditForm(row.getData())
     }
     actionsDiv.appendChild(editButton)
@@ -455,10 +441,9 @@ const rowActions = function(cell, formatterParams, onRendered) {
     documentButton.setAttribute("data-bs-target", "#offcanvasFiles")
     documentButton.setAttribute("aria-controls", "offcanvasFiles")
 
-    documentButton.onclick = async function() {
+    documentButton.onclick = async function(e) {
+      e.stopPropagation();
       const employee_id = row.getData().id
-
-      console.log(employee_id)
 
       // set employee id
       const employee_id_input = document.getElementById('employee_id')
@@ -491,15 +476,7 @@ const documentRowActions = function(cell, formatterParams, onRendered) {
 
       const response = await downloadEmployeeDocument(document_id)
 
-      console.log('--response--')
-      console.log(response)
-
-      // let filename = 'test.pdf'
-
       blob = await response.blob()
-
-      console.log('--file--')
-      console.log(blob)
 
       let link = document.createElement('a')
       link.href = URL.createObjectURL(blob)
@@ -581,6 +558,7 @@ const table = new Tabulator("#employee_table", {
     data: `{{ data | safe }}`, //assign data to table
     layout:"fitColumns", //fit columns to width of table (optional)
     selectableRows: true,
+    selectable: true,
     pagination: "local",
     paginationSize: 15,
     paginationSizeSelector: [10, 15, 20, 50, 100],
@@ -605,15 +583,17 @@ const table = new Tabulator("#employee_table", {
         {
           title:"Gender", 
           field:"gender", 
-          width:100, 
-          editor:"list", 
-          editorParams:{
-            values:{
-              "Male":"Male", 
-              "Female":"Female",
-            }
-          }, 
-          headerFilter:true, 
+          width:100,
+          // editable: false,
+          // selectable: true,
+          // editor:"list", 
+          // editorParams:{
+          //   values:{
+          //     "Male":"Male", 
+          //     "Female":"Female",
+          //   }
+          // }, 
+          headerFilter:"list", 
           headerFilterParams:{
             values:{
               "Male":"Male", 
@@ -636,14 +616,14 @@ const table = new Tabulator("#employee_table", {
           title:"Employee Type", 
           field:"employee_type", 
           width:150,
-          editor:"list", 
-          editorParams:{
-            values:{
-              "Employee":"Employee", 
-              "Volunteer":"Volunteer",
-            }
-          }, 
-          headerFilter:true, 
+          // editor:"list", 
+          // editorParams:{
+          //   values:{
+          //     "Employee":"Employee", 
+          //     "Volunteer":"Volunteer",
+          //   }
+          // }, 
+          headerFilter:"list", 
           headerFilterParams:{
             values:{
               "Employee":"Employee", 
@@ -655,15 +635,15 @@ const table = new Tabulator("#employee_table", {
           title:"Mode of Work", 
           field:"mode_of_work", 
           width:150,
-          editor:"list", 
-          editorParams:{
-            values:{
-              "Onsite":"Onsite", 
-              "Remote":"Remote",
-              "Hybrid":"Hybrid"
-            }
-          }, 
-          headerFilter:true, 
+          // editor:"list", 
+          // editorParams:{
+          //   values:{
+          //     "Onsite":"Onsite", 
+          //     "Remote":"Remote",
+          //     "Hybrid":"Hybrid"
+          //   }
+          // }, 
+          headerFilter:"list", 
           headerFilterParams:{
             values:{
               "Onsite":"Onsite", 
@@ -724,7 +704,7 @@ const table = new Tabulator("#employee_table", {
             width: 165,
             hozAlign: 'center',
             frozen: true,
-            download: false
+            download: false,
         },
     ],
     /*
@@ -774,7 +754,6 @@ Dropzone.options.myDropzone = {
   paramName: "file",
   init: function() {
     this.on('success', function (file, response) {
-      console.log(response.message)
     });
 
     this.on('error', function(file, response) {

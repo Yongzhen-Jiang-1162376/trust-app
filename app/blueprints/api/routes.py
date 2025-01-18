@@ -200,9 +200,9 @@ def download_employee_document():
 
 @bp.route('/update-employee', methods=('POST',))
 def update_employee():
-    print('entering in api function')
+    # print('entering in api function')
     
-    data = request.get_json()    
+    data = request.get_json()
     # employee_id = data['employee_id']
 
     sql = '''
@@ -227,7 +227,7 @@ def update_employee():
             hours_per_week = :hours_per_week,
             volunteer_current_status = :volunteer_current_status,
             feedback_performance_review = :feedback_performance_review,
-            leave_reason_id = :leave_reason_id,
+            leave_reason = :leave_reason,
             comments = :comments,
             updated_at = now()
         WHERE id = :employee_id
@@ -278,7 +278,7 @@ def create_employee():
             hours_per_week,
             volunteer_current_status,
             feedback_performance_review,
-            leave_reason_id,
+            leave_reason,
             comments
         )
         VALUES
@@ -303,7 +303,7 @@ def create_employee():
             :hours_per_week,
             :volunteer_current_status,
             :feedback_performance_review,
-            :leave_reason_id,
+            :leave_reason,
             :comments
         )
     '''

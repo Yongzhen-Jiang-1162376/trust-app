@@ -1,6 +1,6 @@
 from flask import render_template, request, jsonify
 from app.blueprints.hr import bp
-from app.models.hr import Employee, LeaveReason
+from app.models.hr import Employee
 from app.schemas.hr import EmployeeSchema
 from sqlalchemy import select, text
 from app.extensions import db
@@ -99,10 +99,10 @@ def employee_list():
             'id': 'feedback_performance_review',
             'name': 'Feedback & Performance Review'
         },
-        {
-            'id': 'leave_reason_id',
-            'name': 'Leave Reason Id'
-        },
+        # {
+        #     'id': 'leave_reason_id',
+        #     'name': 'Leave Reason Id'
+        # },
         {
             'id': 'leave_reason',
             'name': 'Leave Reason'
@@ -136,12 +136,9 @@ def employee_list():
             e.hours_per_week,
             e.volunteer_current_status,
             REPLACE(e.feedback_performance_review, '\\n', '\\\\n') AS feedback_performance_review,
-            e.leave_reason_id,
-            l.reason as leave_reason,
+            e.leave_reason,
             e.comments
         FROM hr_employee e
-        LEFT JOIN hr_leave_reason l ON e.leave_reason_id = l.id
-        -- WHERE e.id = 57
         ORDER BY e.id
     '''
     
