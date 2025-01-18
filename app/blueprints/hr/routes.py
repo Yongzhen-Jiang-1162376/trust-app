@@ -193,3 +193,9 @@ def employee_create():
             error = err.messages
     
     return render_template('hr/employee_create.html', error=error)
+
+
+@bp.route('/import-employee', methods=('POST',))
+def import_employee():
+    print('entered importing employee')
+    pass
