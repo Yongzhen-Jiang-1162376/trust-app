@@ -12,5 +12,5 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     # SQLALCHEMY_ECHO = True
     UPLOAD_PATH = os.path.join(os.path.dirname(basedir), 'uploads')
-    DOCUMENT_ROOT_PATH = os.path.join(os.path.dirname(basedir), 'documents_root')
     DOWNLOAD_PATH = os.path.join(os.path.dirname(basedir), 'downloads')
+    DOCUMENT_ROOT_PATH = os.path.join(os.path.dirname(basedir), 'documents_root')
