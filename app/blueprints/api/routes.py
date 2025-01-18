@@ -28,7 +28,7 @@ def remove_employee_documents(employee_id):
     print(result)
 
     for file_name in result:
-        file_path = os.path.join(current_app.config['UPLOAD_PATH'], file_name[0])
+        file_path = os.path.join(current_app.config['DOCUMENT_ROOT_PATH'], file_name[0])
         remove_document(file_path)   # result is list of tuple
 
 
@@ -60,7 +60,7 @@ def remove_employee_document_by_document_id(document_id):
 
     row = result.fetchone()
     if row:
-        remove_path = os.path.join(current_app.config['UPLOAD_PATH'], row[0])
+        remove_path = os.path.join(current_app.config['DOCUMENT_ROOT_PATH'], row[0])
         if os.path.exists(remove_path):
             os.remove(remove_path)
 
@@ -116,7 +116,7 @@ def upload_employee_document():
         )
     '''
     
-    save_path = os.path.join(current_app.config['UPLOAD_PATH'], new_file_name)
+    save_path = os.path.join(current_app.config['DOCUMENT_ROOT_PATH'], new_file_name)
     file.save(save_path)
     
     db.session.execute(text(sql), params)
@@ -190,7 +190,7 @@ def download_employee_document():
 
     row = result.fetchone()
     if row:
-        file_path = os.path.join(current_app.config['UPLOAD_PATH'], row[0])
+        file_path = os.path.join(current_app.config['DOCUMENT_ROOT_PATH'], row[0])
         if os.path.exists(file_path):
             
             return send_file(file_path, as_attachment=True)
