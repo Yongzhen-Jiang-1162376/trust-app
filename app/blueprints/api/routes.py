@@ -106,10 +106,10 @@ def import_employee_data(data):
     values = []
     for row in data:
         value = (
-            f"({'Null' if row[1] == '' else f"'{row[1]}'"}, '{row[2]}', '{row[3]}', {'Null' if row[4] == '' else f"'{row[4]}'"}, '{row[5]}',"
+            f"({'Null' if row[1] == '' else {f"'{row[1]}'"}}, '{row[2]}', '{row[3]}', {'Null' if row[4] == '' else {f"'{row[4]}'"}}, '{row[5]}',"
             f"'{row[6]}', '{row[7]}', '{row[8]}', '{row[9]}', '{row[10]}', "
-            f"'{row[11]}', '{row[12]}', {'Null' if row[13] == '' else f"'{row[13]}'"}, '{row[14]}', '{row[15]}', "
-            f"'{row[16]}', '{row[18]}', '{row[19]}', {'Null' if row[20] == '' else f"'{row[20]}'"}, {'Null' if row[21] == '' else f"'{row[21]}'"}, "
+            f"'{row[11]}', '{row[12]}', {'Null' if row[13] == '' else {f"'{row[13]}'"}}, '{row[14]}', '{row[15]}', "
+            f"'{row[16]}', '{row[18]}', '{row[19]}', {'Null' if row[20] == '' else {f"'{row[20]}'"}}, {'Null' if row[21] == '' else {f"'{row[21]}'"}}, "
             f"'{row[22]}', '{row[23]}')"
         )
         values.append(value)
