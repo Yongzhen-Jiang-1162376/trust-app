@@ -105,11 +105,17 @@ def import_employee_data(data):
 
     values = []
     for row in data:
-        row1 = f"{'Null' if row[1] == '' else f"'{row[1]}'"}"
-        row4 = f"{'Null' if row[4] == '' else f"'{row[4]}'"}"
-        row13 = f"{'Null' if row[13] == '' else f"'{row[13]}'"}"
-        row20 = f"{'Null' if row[20] == '' else f"'{row[20]}'"}"
-        row21 = f"{'Null' if row[21] == '' else f"'{row[21]}'"}"
+        r1 = f"'{row[1]}'"
+        r4 = f"'{row[4]}'"
+        r13 = f"'{row[13]}'"
+        r20 = f"'{row[20]}'"
+        r21 = f"'{row[21]}'"
+
+        row1 = f"{'Null' if row[1] == '' else r1}"
+        row4 = f"{'Null' if row[4] == '' else r4}"
+        row13 = f"{'Null' if row[13] == '' else r13}"
+        row20 = f"{'Null' if row[20] == '' else r20}"
+        row21 = f"{'Null' if row[21] == '' else r21}"
 
         value = f"({row1}, '{row[2]}', '{row[3]}', {row4}, '{row[5]}', '{row[6]}', '{row[7]}', '{row[8]}', '{row[9]}', '{row[10]}', '{row[11]}', '{row[12]}', {row13}, '{row[14]}', '{row[15]}', '{row[16]}', '{row[18]}', '{row[19]}', {row20}, {row21}, '{row[22]}', '{row[23]}')"
 
