@@ -105,13 +105,20 @@ def import_employee_data(data):
 
     values = []
     for row in data:
-        value = (
-            f"({'Null' if row[1] == '' else {f"'{row[1]}'"}}, '{row[2]}', '{row[3]}', {'Null' if row[4] == '' else {f"'{row[4]}'"}}, '{row[5]}',"
-            f"'{row[6]}', '{row[7]}', '{row[8]}', '{row[9]}', '{row[10]}', "
-            f"'{row[11]}', '{row[12]}', {'Null' if row[13] == '' else {f"'{row[13]}'"}}, '{row[14]}', '{row[15]}', "
-            f"'{row[16]}', '{row[18]}', '{row[19]}', {'Null' if row[20] == '' else {f"'{row[20]}'"}}, {'Null' if row[21] == '' else {f"'{row[21]}'"}}, "
-            f"'{row[22]}', '{row[23]}')"
-        )
+        row1 = f"{'Null' if row[1] == '' else f"'{row[1]}'"}"
+        row4 = f"{'Null' if row[4] == '' else f"'{row[4]}'"}"
+        row13 = f"{'Null' if row[13] == '' else f"'{row[13]}'"}"
+        row20 = f"{'Null' if row[20] == '' else f"'{row[20]}'"}"
+        row21 = f"{'Null' if row[21] == '' else f"'{row[21]}'"}"
+
+        value = f"({row1}, '{row[2]}', '{row[3]}', {row4}, '{row[5]}', '{row[6]}', '{row[7]}', '{row[8]}', '{row[9]}', '{row[10]}', '{row[11]}', '{row[12]}', {row13}, '{row[14]}', '{row[15]}', '{row[16]}', '{row[18]}', '{row[19]}', {row20}, {row21}, '{row[22]}', '{row[23]}')"
+
+        # value = (
+        #     f"({'Null' if row[1] == '' else {f"'{row[1]}'"}}, '{row[2]}', '{row[3]}', {'Null' if row[4] == '' else {f"'{row[4]}'"}}, '{row[5]}',"
+        #     f"'{row[6]}', '{row[7]}', '{row[8]}', '{row[9]}', '{row[10]}', "
+        #     f"'{row[11]}', '{row[12]}', {'Null' if row[13] == '' else {f"'{row[13]}'"}}, '{row[14]}', '{row[15]}', "
+        #     f"'{row[16]}', '{row[18]}', '{row[19]}', {'Null' if row[20] == '' else {f"'{row[20]}'"}}, {'Null' if row[21] == '' else {f"'{row[21]}'"}}, "
+        #     f"'{row[22]}', '{row[23]}')")
         values.append(value)
     
     insert_sql += ', '.join(values)
