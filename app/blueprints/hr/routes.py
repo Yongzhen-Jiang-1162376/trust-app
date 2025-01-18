@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify
+from flask import render_template, request, jsonify, current_app
 from app.blueprints.hr import bp
 from app.models.hr import Employee
 from app.schemas.hr import EmployeeSchema
@@ -8,6 +8,8 @@ from marshmallow import EXCLUDE
 from marshmallow.exceptions import ValidationError
 from pprint import pprint
 from flask_login import login_required
+import os
+import pyexcel as pe
 
 
 @bp.route('/employees', methods=('GET',))
@@ -193,9 +195,3 @@ def employee_create():
             error = err.messages
     
     return render_template('hr/employee_create.html', error=error)
-
-
-@bp.route('/import-employee', methods=('POST',))
-def import_employee():
-    print('entered importing employee')
-    pass

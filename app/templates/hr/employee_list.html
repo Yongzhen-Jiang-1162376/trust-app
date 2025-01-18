@@ -35,10 +35,12 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="/hr/import-employee" method="post">
+        <form id="importForm">
           <div class="mb-3">
             <label for="formFile" class="form-label">Please upload an Excel file</label>
             <input class="form-control form-control-sm" type="file" id="formFile">
+          </div>
+          <div class="text-danger" id="form-validation">
           </div>
           <div class="text-end mt-5">
             <button type="submit" class="btn btn-primary btn-sm">Import</button>
@@ -210,6 +212,58 @@
 {% block scripts %}
 
 <script>
+
+const importEmployeeData = async () => {
+  const fileInput = document.getElementById('formFile')
+
+  if (fileInput.files.length === 0) {
+    return new Promise((resolve) => {
+      const result = {
+        ok: false,
+        json: async () => ({
+          message: 'File is empty'
+        })
+      };
+      resolve(result);
+    })
+  }
+
+  const file = fileInput.files[0]
+
+  const formData = new FormData();
+  formData.append('file', file)
+
+  const url = "{{ url_for('api.import_employee', _external=True) }}"
+
+  const response = await fetch(url, {
+    method: 'post',
+    body: formData
+  })
+
+  return response
+
+}
+
+/*
+ * javascript to deal with excel import
+ */
+document.getElementById('importForm').addEventListener('submit', async function(e) {
+  e.preventDefault();
+
+  const response = await importEmployeeData()
+  const result = await response.json()
+
+  if (!response.ok) {
+    document.getElementById('form-validation').innerHTML = result.message
+  }
+
+  else {
+    window.location.href = '/hr/employees'
+  }
+
+})
+
+
 
 const fetchEmployeeDocuments = async (employee_id) => {
   const url = "{{ url_for('api.get_employee_documents', _external=True) }}"

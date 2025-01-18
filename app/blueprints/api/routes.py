@@ -5,6 +5,7 @@ from app.extensions import db
 import os
 import uuid
 from pathlib import Path
+import pyexcel as pe
 
 
 def remove_document(file_path):
@@ -69,6 +70,54 @@ def remove_employee_document_by_document_id(document_id):
     '''
     
     db.session.execute(text(remove_sql), {'document_id': document_id})
+    db.session.commit()
+
+
+def import_employee_data(data):
+    insert_sql = '''
+        INSERT INTO hr_employee
+        (
+            start_date,
+            full_name,
+            gender,
+            trial_period_start_date,
+            employee_type,
+            position,
+            mode_of_work,
+            volunteer_current_status,
+            hours_per_week,
+            portfolio_assigned,
+            manager_name,
+            address,
+            date_of_birth,
+            nationality,
+            contact_detail,
+            email,
+            comments,
+            trial_period,
+            resignation_date,
+            last_working_date,
+            feedback_performance_review,
+            leave_reason
+        )
+        VALUES
+    '''
+
+    values = []
+    for row in data:
+        value = (
+            f"({'Null' if row[1] == '' else f"'{row[1]}'"}, '{row[2]}', '{row[3]}', {'Null' if row[4] == '' else f"'{row[4]}'"}, '{row[5]}',"
+            f"'{row[6]}', '{row[7]}', '{row[8]}', '{row[9]}', '{row[10]}', "
+            f"'{row[11]}', '{row[12]}', {'Null' if row[13] == '' else f"'{row[13]}'"}, '{row[14]}', '{row[15]}', "
+            f"'{row[16]}', '{row[18]}', '{row[19]}', {"Null" if row[20] == '' else f"'{row[20]}'"}, {'Null' if row[21] == '' else f"'{row[21]}'"}, "
+            f"'{row[22]}', '{row[23]}')"
+        )
+        values.append(value)
+    
+    insert_sql += ', '.join(values)
+    # print(insert_sql)
+
+    db.session.execute(text(insert_sql))
     db.session.commit()
 
 
@@ -325,3 +374,23 @@ def create_employee():
 # @bp.route('/export-employee-data', methods=('GET',))
 # def export_employee_data():
 #     pass
+
+
+@bp.route('/import-employee', methods=('POST',))
+def import_employee():
+
+    file = request.files['file']
+    filename = file.filename
+
+    save_path = os.path.join(current_app.config['UPLOAD_PATH'], filename)
+    file.save(save_path)
+
+    try:
+        emp_records = pe.get_array(file_name=save_path, start_row=1)
+
+        import_employee_data(emp_records)
+
+    except Exception as e:
+        return jsonify({'message': repr(e)}), 400
+
+    return jsonify({'message': 'imported successfully'}), 200
