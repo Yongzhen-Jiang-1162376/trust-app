@@ -1,9 +1,10 @@
-from flask import request
+from flask import request, current_app, send_file
 from faker import Faker
 from app.extensions import db
 from app.blueprints.utils import bp
 from sqlalchemy import text
 import random
+import os
 
 
 def generate_fake_emp():
@@ -30,7 +31,7 @@ def generate_fake_emp():
         'hours_per_week': random.uniform(4, 40),
         'volunteer_current_status': random.choice(['working', 'not working', 'postponed', 'stopped']),
         'feedback_performance_review':fake.text(max_nb_chars=160),
-        'leave_reason_id': random.randint(1, 3),
+        'leave_reason': fake.sentence(nb_words=6),
         'comments': ' '.join(fake.words(5))
     }
     
@@ -68,7 +69,7 @@ def create_fake_employees():
             hours_per_week,
             volunteer_current_status,
             feedback_performance_review,
-            leave_reason_id,
+            leave_reason,
             comments
         ) VALUES (
             :full_name,
@@ -91,12 +92,18 @@ def create_fake_employees():
             :hours_per_week,
             :volunteer_current_status,
             :feedback_performance_review,
-            :leave_reason_id,
+            :leave_reason,
             :comments
         )
     '''
-    
+
     db.session.execute(text(sql), employees)
     db.session.commit()
 
     return '<h2>data inserted successfully</h2>'
+
+
+@bp.route('/download/<path:name>')
+def download_file(name):
+    filepath = os.path.join(current_app.config['DOWNLOAD_PATH'], name)
+    return send_file(filepath, as_attachment=True)
