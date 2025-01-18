@@ -13,6 +13,13 @@
         </form>
         <button type="button" class="btn btn-danger btn-sm ms-2" onclick="deleteEmployees()">Delete</button>
         <button type="button" class="btn btn-secondary btn-sm ms-2" onclick="exportEmployeeData()">Export</button>
+        <button type="button" class="btn btn-secondary btn-sm ms-2" onclick="exportEmployeeData()">Import</button>
+        <a 
+          type="button" 
+          class="btn btn-warning btn-sm ms-2" 
+          style="color: white;"
+          href="{{ url_for('utils.download_file', name='hr/Raw database.xlsx') }}"
+        >Download Template</a>
     </div>
 </div>
 
