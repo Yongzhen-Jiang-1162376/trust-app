@@ -69,6 +69,7 @@ class EmployeeDocument(db.Model):
     original_file_name: Mapped[str] = mapped_column(Text)
     extension: Mapped[str] = mapped_column(String(255))
     file_uuid: Mapped[str] = mapped_column(String(36))
+    file_name: Mapped[Optional[str]] = mapped_column(Text)
     created_at: Mapped[Optional[datetime]] = mapped_column(DateTime, insert_default=func.now())
     created_by_id: Mapped[Optional[int]]
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=func.now())

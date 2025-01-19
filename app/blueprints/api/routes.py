@@ -21,12 +21,12 @@ def remove_employee(employee_id):
 
 def remove_employee_documents(employee_id):
     sql = '''
-        SELECT concat(file_uuid, '.', extension) AS file_name FROM hr_employee_document WHERE employee_id = :employee_id
+        SELECT file_name FROM hr_employee_document WHERE employee_id = :employee_id
     '''
 
     result = db.session.execute(text(sql), {'employee_id': employee_id}).fetchall()
 
-    print(result)
+    # print(result)
 
     for file_name in result:
         file_path = os.path.join(current_app.config['DOCUMENT_ROOT_PATH'], file_name[0])
@@ -53,7 +53,7 @@ def remove_employee_profile(employee_id):
 
 def remove_employee_document_by_document_id(document_id):
     select_sql = '''
-        SELECT concat(file_uuid, '.', extension) AS file_name FROM hr_employee_document WHERE id = :document_id
+        SELECT file_name FROM hr_employee_document WHERE id = :document_id
     '''
 
     result = db.session.execute(text(select_sql), {'document_id': document_id})
@@ -148,7 +148,7 @@ def upload_employee_document():
     original_file_name = file.filename
     file_uuid = str(uuid.uuid4())
     
-    new_file_name = file_uuid + extension
+    # new_file_name = file_uuid + extension
     
     params = {
         'employee_id': employee_id,
@@ -178,11 +178,35 @@ def upload_employee_document():
         )
     '''
     
+    db.session.execute(text(sql), params)
+    db.session.commit()
+    
+    sql = '''
+        SELECT LAST_INSERT_ID()
+    '''
+    
+    last_inserted_id = db.session.execute(text(sql)).scalar()
+    
+    # file name: original file name + first 8 digits of uuid + file id + extension
+    new_file_name = Path(file.filename).stem + '_' + file_uuid[0:8] + '_' + str(last_inserted_id) + extension
+    
     save_path = os.path.join(current_app.config['DOCUMENT_ROOT_PATH'], new_file_name)
     file.save(save_path)
+
+    sql = '''
+        UPDATE hr_employee_document
+        SET file_name = :file_name
+        WHERE id = :id
+    '''
+    
+    params = {
+        'file_name': new_file_name,
+        'id': last_inserted_id
+    }
     
     db.session.execute(text(sql), params)
     db.session.commit()
+
 
     return jsonify({'message': f'File {file.filename} uploaded successfully'})
 
@@ -244,11 +268,11 @@ def download_employee_document():
     document_id = data['document_id']
 
     select_sql = '''
-        SELECT concat(file_uuid, '.', extension) AS file_name FROM hr_employee_document WHERE id = :document_id
+        SELECT file_name FROM hr_employee_document WHERE id = :document_id
     '''
 
     result = db.session.execute(text(select_sql), {'document_id': document_id})
-    print(result)
+    # print(result)
 
     row = result.fetchone()
     if row:
