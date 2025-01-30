@@ -74,3 +74,18 @@ class EmployeeDocument(db.Model):
     created_by_id: Mapped[Optional[int]]
     updated_at: Mapped[Optional[datetime]] = mapped_column(DateTime, onupdate=func.now())
     updated_by_id: Mapped[Optional[int]]
+
+
+class EmployeePortfolioGroup(db.Model):
+    __tablename__ = 'hr_employee_portfolio_group'
+    
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    group: Mapped[str] = mapped_column(String(255))
+
+
+class EmployeePortfolio(db.Model):
+    __tablename__ = 'hr_employee_portfolio'
+    
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    group_id: Mapped[int] = mapped_column(ForeignKey('hr_employee_portfolio_group.id'))
+    portfolio: Mapped[str] = mapped_column(String(255))
