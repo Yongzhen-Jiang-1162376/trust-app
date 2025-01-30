@@ -80,7 +80,7 @@ class EmployeePortfolioGroup(db.Model):
     __tablename__ = 'hr_employee_portfolio_group'
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
-    group: Mapped[str] = mapped_column(String(255))
+    group_name: Mapped[str] = mapped_column(String(255))
 
 
 class EmployeePortfolio(db.Model):
@@ -89,3 +89,11 @@ class EmployeePortfolio(db.Model):
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     group_id: Mapped[int] = mapped_column(ForeignKey('hr_employee_portfolio_group.id'))
     portfolio: Mapped[str] = mapped_column(String(255))
+
+
+class EmployeePortfolioAssigned(db.Model):
+    __tablename__ = 'hr_employee_portfolio_assigned'
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    employee_id: Mapped[int] = mapped_column(ForeignKey('hr_employee.id'))
+    portfolio_id: Mapped[int] = mapped_column(ForeignKey('hr_employee_portfolio.id'))
