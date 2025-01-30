@@ -341,6 +341,9 @@ def create_employee():
     if full_name is None or full_name == '':
         return jsonify({'status': 'error', 'message': 'Name is empty'}), 400
 
+    portfolios = data.get('portfolio_assigned')
+    data.pop('portfolio_assigned')
+
 
     sql = '''
         INSERT INTO hr_employee
@@ -348,7 +351,6 @@ def create_employee():
             full_name, 
             gender,
             position,
-            portfolio_assigned,
             manager_name,
             employee_type,
             mode_of_work,
@@ -373,7 +375,6 @@ def create_employee():
             :full_name, 
             :gender,
             :position,
-            :portfolio_assigned,
             :manager_name,
             :employee_type,
             :mode_of_work,
@@ -405,6 +406,20 @@ def create_employee():
     last_inserted_id = db.session.execute(text(sql)).scalar()
     # print('-------- last inserted id ----------')
     # print(last_inserted_id)
+    
+    sql = 'insert into hr_employee_portfolio_assigned (employee_id, portfolio_id) values '
+    s = ', '.join([f'({last_inserted_id}, {p})' for p in portfolios])
+    
+    sql += s
+    
+    print('insertion sql')
+    print(sql)
+    
+    db.session.execute(text(sql))
+    db.session.commit()
+    
+    
+    
     
     return jsonify({'status': 'success', 'message': 'Profile data added successfully', 'employee_id': last_inserted_id}), 200
 

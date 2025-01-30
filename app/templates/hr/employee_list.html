@@ -106,20 +106,10 @@
           </div>
           <div class="mb-3">
             <label for="portfolio_assigned" class="form-label">Portfolio (*)</label>
-            <!-- <input type="text" class="form-control" id="portfolio_assigned" name="portfolio_assigned"> -->
             <select class="form-select" id="portfolio_assigned" name="portfolio_assigned" multiple>
               {% for p in portfolio_list %}
                 <option value="{{ p[0] }}">{{ p[1] }}</option>
               {% endfor %}
-              <!-- <option value="1">Health Advisors - Mental</option>
-              <option value="2">Health Advisors - Disability</option>
-              <option value="3">Health Advisors - General</option>
-              <option value="4">Environment Advisors - Water Care</option>
-              <option value="5">Environment Advisors - Climate Change</option>
-              <option value="6">Cultural Advisors</option>
-              <option value="7">Finance Operations</option>
-              <option value="8">Chartered Accountant</option>
-              <option value="9">Legal Team</option> -->
             </select>
           </div>
           <div class="mb-3">

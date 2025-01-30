@@ -20,7 +20,7 @@
                     <input type="hidden" class="form-control" id="id" name="id">
                 </div>
                 <div class="mb-3">
-                    <label for="full_name" class="form-label">Full Name</label>
+                    <label for="full_name" class="form-label">Full Name (*)</label>
                     <input type="text" class="form-control" id="full_name" name="full_name">
                 </div>
                 <div class="mb-3">
@@ -34,10 +34,18 @@
                     <label for="position" class="form-label">Position</label>
                     <input type="text" class="form-control" id="position" name="position">
                 </div>
-                <div class="mb-3">
+                <!-- <div class="mb-3">
                     <label for="portfolio_assigned" class="form-label">Portfolio Assigned</label>
                     <input type="text" class="form-control" id="portfolio_assigned" name="portfolio_assigned">
-                </div>
+                </div> -->
+                <div class="mb-3">
+                    <label for="portfolio_assigned" class="form-label">Portfolio (*)</label>
+                    <select class="form-select" id="portfolio_assigned" name="portfolio_assigned" multiple>
+                      {% for p in portfolio_list %}
+                        <option value="{{ p[0] }}">{{ p[1] }}</option>
+                      {% endfor %}
+                    </select>
+                  </div>
                 <div class="mb-3">
                     <label for="manager_name" class="form-label">Manager Name</label>
                     <input type="text" class="form-control" id="manager_name" name="manager_name">
@@ -218,7 +226,16 @@ document.getElementById("submitButton").addEventListener('click', async function
         }
     })
 
+    if (!data.hasOwnProperty("portfolio_assigned")) {
+        notifyError('No portfolio selected')
+        return
+    }
+
+    data['portfolio_assigned'] = $('#portfolio_assigned').val()
+
     const response = await createEmployeeProfile(data)
+
+    console.log(data)
 
     if (!response.ok) {
         error = await response.json()
@@ -253,18 +270,23 @@ document.getElementById("submitButton").addEventListener('click', async function
 
 const createEmployeeProfile = async (data) => {
     const url = "{{ url_for('api.create_employee', _external=True) }}"
-  
+
     const options = {
-      method: 'POST',
-      headers: {
+        method: 'POST',
+        headers: {
         'content-type': 'application/json'
-      },
-      body: JSON.stringify(data)
+        },
+        body: JSON.stringify(data)
     }
-  
+
     result = await fetch(url, options)
     return result
-  }
+}
+
+$('#portfolio_assigned').select2({
+    theme: 'bootstrap-5',
+    closeOnSelect: false
+})
 
 
 </script>

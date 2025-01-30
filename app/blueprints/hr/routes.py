@@ -174,36 +174,44 @@ def employee_list():
 @bp.route('/employees/create', methods=('GET', 'POST'))
 @login_required
 def employee_create():
-    error = None
     
-    allow_none_fields = [
-        'date_of_birth', 
-        'start_date', 
-        'resignation_date', 
-        'last_working_date', 
-        'trial_period_start_date',
-        'hours_per_week',
-        'trial_period'
-    ]
+    sql = """
+        SELECT
+            p.id,
+            p.portfolio
+        FROM hr_employee_portfolio p
+        ORDER BY p.id
+    """
+    portfolio_list = db.session.execute(text(sql)).fetchall()
     
-    if (request.method == 'POST'):
-        emp_schema = EmployeeSchema(unknown=EXCLUDE)
+    # error = None
+    
+    # allow_none_fields = [
+    #     'date_of_birth', 
+    #     'start_date', 
+    #     'resignation_date', 
+    #     'last_working_date', 
+    #     'trial_period_start_date',
+    #     'hours_per_week',
+    #     'trial_period'
+    # ]
+    
+    # if (request.method == 'POST'):
+    #     emp_schema = EmployeeSchema(unknown=EXCLUDE)
         
-        formData = request.form.to_dict()
+    #     formData = request.form.to_dict()
         
-        for key in formData.keys():
-            if key in allow_none_fields and formData[key] == '':
-                formData[key] = None
+    #     for key in formData.keys():
+    #         if key in allow_none_fields and formData[key] == '':
+    #             formData[key] = None
                 
-        files = request.files
+    #     files = request.files
         
-        # pprint(formData)
-        # pprint(files)
+    #     try:
+    #         emp_data = emp_schema.load(formData)
         
-        try:
-            emp_data = emp_schema.load(formData)
-        
-        except ValidationError as err:
-            error = err.messages
+    #     except ValidationError as err:
+    #         error = err.messages
     
-    return render_template('hr/employee_create.html', error=error)
+
+    return render_template('hr/employee_create.html', portfolio_list=portfolio_list)
