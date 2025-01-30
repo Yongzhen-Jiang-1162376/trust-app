@@ -26,8 +26,6 @@ def remove_employee_documents(employee_id):
 
     result = db.session.execute(text(sql), {'employee_id': employee_id}).fetchall()
 
-    # print(result)
-
     for file_name in result:
         file_path = os.path.join(current_app.config['DOCUMENT_ROOT_PATH'], file_name[0])
         remove_document(file_path)   # result is list of tuple
@@ -57,7 +55,6 @@ def remove_employee_document_by_document_id(document_id):
     '''
 
     result = db.session.execute(text(select_sql), {'document_id': document_id})
-    # print(result)
 
     row = result.fetchone()
     if row:
@@ -128,7 +125,6 @@ def import_employee_data(data):
         values.append(value)
     
     insert_sql += ', '.join(values)
-    # print(insert_sql)
 
     db.session.execute(text(insert_sql))
     db.session.commit()
@@ -156,8 +152,6 @@ def upload_employee_document():
         'original_file_name': original_file_name,
         'file_uuid': file_uuid
     }
-    
-    # print(employee_id, extension, original_file_name, file_uuid, new_file_name)
     
     sql = '''
         INSERT INTO hr_employee_document
@@ -215,9 +209,6 @@ def get_employee_documents():
     data = request.get_json()    
     employee_id = data['employee_id']
 
-    # print(data)
-    # print(employee_id)
-    
     sql = '''
         SELECT
             id,
@@ -236,8 +227,6 @@ def get_employee_documents():
     result_mappings = result.mappings()
 
     rows = [dict(row) for row in result_mappings]
-
-    # print(rows)
 
     return rows
 
@@ -272,7 +261,6 @@ def download_employee_document():
     '''
 
     result = db.session.execute(text(select_sql), {'document_id': document_id})
-    # print(result)
 
     row = result.fetchone()
     if row:
@@ -286,13 +274,9 @@ def download_employee_document():
 
 @bp.route('/update-employee', methods=('POST',))
 def update_employee():
-    # print('entering in api function')
     
     data = request.get_json()
     # employee_id = data['employee_id']
-    
-    print('------------- data ------------------')
-    print(data)
     
     portfolios = data['portfolio_assigned']
     employee_id = data['employee_id']
@@ -351,14 +335,7 @@ def update_employee():
 
 @bp.route('/create-employee', methods=('POST',))
 def create_employee():
-    # print('entering creating employee api function')
-    
     data = request.get_json()
-    # employee_id = data['employee_id']
-    
-    # print('---------------- new data here (full name) ------------------')
-    # print(data)
-    # print(data['full_name'])
     
     full_name = data.get('full_name')
     if full_name is None or full_name == '':

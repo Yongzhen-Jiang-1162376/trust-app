@@ -439,24 +439,15 @@ flatpickr(".datepicker", {
 // ];
 
 const populateEditForm = function(rowData) {
-  console.log(rowData)
-
   document.getElementById('id').value = rowData.id
   document.getElementById('full_name').value = rowData.full_name
   document.getElementById('gender').value = rowData.gender
   document.getElementById('position').value = rowData.position
-  // document.getElementById('portfolio_assigned').value = rowData.portfolio_assigned
-  // console.log(rowData.portfolio_assigned)
-  // console.log(rowData.portfolio_assigned_names)
 
   if (rowData.portfolio_assigned !== null) {
-    console.log(rowData.portfolio_assigned)
     let portfolio_assigned = rowData.portfolio_assigned.split(", ")
-    console.log(portfolio_assigned)
     portfolio_assigned = portfolio_assigned.map(String)
-    console.log('aaaaaaaaa')
-    console.log(portfolio_assigned)
-    $('#portfolio_assigned').val(['1', '2']).trigger('change')
+    $('#portfolio_assigned').val(portfolio_assigned).trigger('change')
   }
   
   // $('#portfolio_assigned').val(['1', '2']).trigger('change')
@@ -524,19 +515,14 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
   }
 
   let elements = document.getElementsByClassName("select2-selection__choice")
-  console.log(elements)
   let folios_names = []
   for (let element of elements) {
     folios_names.push(element.getAttribute('title'))
   }
 
-  console.log(folios_names.join(", "))
-
   data.portfolio_assigned_names = folios_names.join(", ")
 
   let saved_portfolios = $('#portfolio_assigned').val()
-  console.log('saved_portfolios')
-  console.log(saved_portfolios)
 
   // data.portfolio_assigned = $('#portfolio_assigned').val()
 
@@ -544,9 +530,7 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
 
   if (response.ok) {
     
-    console.log(data)
     data.portfolio_assigned = saved_portfolios.join(", ")
-    console.log(data)
 
     // hide offcanvas
     const offcanvasElement = document.getElementById('offcanvasEdit')

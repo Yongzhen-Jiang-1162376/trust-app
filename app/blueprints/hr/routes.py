@@ -159,8 +159,6 @@ def employee_list():
     # serialize to json string
     table_data = employee_schema.dumps(result)
     
-    # print(json_str)
-    
     sql = """
         SELECT
             p.id,
@@ -170,8 +168,6 @@ def employee_list():
     """
     portfolio_list = db.session.execute(text(sql)).fetchall()
     
-    print(table_data)
-    
     return render_template('hr/employee_list.html', portfolio_list =portfolio_list, columns=columns, table_data=table_data)
 
 
@@ -179,9 +175,6 @@ def employee_list():
 @login_required
 def employee_create():
     error = None
-    
-    # print('entering....')
-    # print(request.method)
     
     allow_none_fields = [
         'date_of_birth', 
