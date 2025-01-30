@@ -23,7 +23,6 @@ class Employee(db.Model):
     mode_of_work: Mapped[WorkModeTpye]
     volunteer_current_status: Mapped[Optional[str]] = mapped_column(String(255))
     hours_per_week: Mapped[Optional[str]] = mapped_column(String(255))
-    portfolio_assigned: Mapped[Optional[str]] = mapped_column(String(255))
     manager_name: Mapped[Optional[str]] = mapped_column(String(255))
     address: Mapped[Optional[str]] = mapped_column(String(255))
     date_of_birth: Mapped[Optional[date]]

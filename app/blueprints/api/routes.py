@@ -290,13 +290,20 @@ def update_employee():
     
     data = request.get_json()
     # employee_id = data['employee_id']
+    
+    print('------------- data ------------------')
+    print(data)
+    
+    portfolios = data['portfolio_assigned']
+    employee_id = data['employee_id']
+    
+    data.pop('portfolio_assigned')
 
     sql = '''
         UPDATE hr_employee
         SET full_name = :full_name,
             gender = :gender,
             position = :position,
-            portfolio_assigned = :portfolio_assigned,
             manager_name = :manager_name,
             employee_type = :employee_type,
             mode_of_work = :mode_of_work,
@@ -320,6 +327,23 @@ def update_employee():
     '''
     
     db.session.execute(text(sql), data)
+    db.session.commit()
+    
+    
+    # update portfolio assigned
+    sql = '''
+        delete from hr_employee_portfolio_assigned
+        where employee_id = :employee_id
+    '''
+    db.session.execute(text(sql), {'employee_id': employee_id})
+    db.session.commit()
+    
+    sql = 'insert into hr_employee_portfolio_assigned (employee_id, portfolio_id) values '
+    s = ', '.join([f'({employee_id}, {p})' for p in portfolios])
+    
+    sql += s
+    
+    db.session.execute(text(sql))
     db.session.commit()
     
     return jsonify({'status': 'success', 'message': 'Profile data updated successfully'}), 200

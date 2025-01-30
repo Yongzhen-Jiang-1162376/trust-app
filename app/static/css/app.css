@@ -90,6 +90,10 @@ table.dataTable td {
   border: 1px solid;
 }
 
+.select2-container--bootstrap-5 .select2-selection {
+  border: 1px solid;
+}
+
 .dropzone {
   background-color: #82c0cc;
   font-size: 20px;

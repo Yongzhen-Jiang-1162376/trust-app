@@ -90,7 +90,7 @@
             <input type="hidden" class="form-control" id="id" name="id">
           </div>
           <div class="mb-3">
-            <label for="full_name" class="form-label">Full Name</label>
+            <label for="full_name" class="form-label">Full Name (*)</label>
             <input type="text" class="form-control" id="full_name" name="full_name">
           </div>
           <div class="mb-3">
@@ -105,8 +105,22 @@
             <input type="text" class="form-control" id="position" name="position">
           </div>
           <div class="mb-3">
-            <label for="portfolio_assigned" class="form-label">Portfolio Assigned</label>
-            <input type="text" class="form-control" id="portfolio_assigned" name="portfolio_assigned">
+            <label for="portfolio_assigned" class="form-label">Portfolio (*)</label>
+            <!-- <input type="text" class="form-control" id="portfolio_assigned" name="portfolio_assigned"> -->
+            <select class="form-select" id="portfolio_assigned" name="portfolio_assigned" multiple>
+              {% for p in portfolio_list %}
+                <option value="{{ p[0] }}">{{ p[1] }}</option>
+              {% endfor %}
+              <!-- <option value="1">Health Advisors - Mental</option>
+              <option value="2">Health Advisors - Disability</option>
+              <option value="3">Health Advisors - General</option>
+              <option value="4">Environment Advisors - Water Care</option>
+              <option value="5">Environment Advisors - Climate Change</option>
+              <option value="6">Cultural Advisors</option>
+              <option value="7">Finance Operations</option>
+              <option value="8">Chartered Accountant</option>
+              <option value="9">Legal Team</option> -->
+            </select>
           </div>
           <div class="mb-3">
             <label for="manager_name" class="form-label">Manager Name</label>
@@ -425,11 +439,28 @@ flatpickr(".datepicker", {
 // ];
 
 const populateEditForm = function(rowData) {
+  console.log(rowData)
+
   document.getElementById('id').value = rowData.id
   document.getElementById('full_name').value = rowData.full_name
   document.getElementById('gender').value = rowData.gender
   document.getElementById('position').value = rowData.position
-  document.getElementById('portfolio_assigned').value = rowData.portfolio_assigned
+  // document.getElementById('portfolio_assigned').value = rowData.portfolio_assigned
+  // console.log(rowData.portfolio_assigned)
+  // console.log(rowData.portfolio_assigned_names)
+
+  if (rowData.portfolio_assigned !== null) {
+    console.log(rowData.portfolio_assigned)
+    let portfolio_assigned = rowData.portfolio_assigned.split(", ")
+    console.log(portfolio_assigned)
+    portfolio_assigned = portfolio_assigned.map(String)
+    console.log('aaaaaaaaa')
+    console.log(portfolio_assigned)
+    $('#portfolio_assigned').val(['1', '2']).trigger('change')
+  }
+  
+  // $('#portfolio_assigned').val(['1', '2']).trigger('change')
+  
   document.getElementById('manager_name').value = rowData.manager_name
   document.getElementById('employee_type').value = rowData.employee_type
   document.getElementById('mode_of_work').value = rowData.mode_of_work
@@ -474,6 +505,9 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
     if (key === 'id') {
       data['employee_id'] = value
     }
+    else if (key === 'portfolio_assigned') {
+      data['portfolio_assigned'] = $('#portfolio_assigned').val()
+    }
     else if (key === 'leave_reason_id') {
       data['leave_reason_id'] = value === "0" ? null : value
     }
@@ -484,10 +518,36 @@ document.getElementById('editForm').addEventListener('submit', async function(ev
     }
   })
 
+  if (!data.hasOwnProperty("portfolio_assigned")) {
+    notifyError('No portfolio selected')
+    return
+  }
+
+  let elements = document.getElementsByClassName("select2-selection__choice")
+  console.log(elements)
+  let folios_names = []
+  for (let element of elements) {
+    folios_names.push(element.getAttribute('title'))
+  }
+
+  console.log(folios_names.join(", "))
+
+  data.portfolio_assigned_names = folios_names.join(", ")
+
+  let saved_portfolios = $('#portfolio_assigned').val()
+  console.log('saved_portfolios')
+  console.log(saved_portfolios)
+
+  // data.portfolio_assigned = $('#portfolio_assigned').val()
+
   const response = await updateEmployeeProfile(data)
 
   if (response.ok) {
     
+    console.log(data)
+    data.portfolio_assigned = saved_portfolios.join(", ")
+    console.log(data)
+
     // hide offcanvas
     const offcanvasElement = document.getElementById('offcanvasEdit')
     const offcanvasInstance = bootstrap.Offcanvas.getInstance(offcanvasElement)
@@ -642,7 +702,7 @@ const deleteEmployees = async function() {
 //create Tabulator on DOM element with id "example-table"
 const table = new Tabulator("#employee_table", {
     minHeight: "650px", // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
-    data: `{{ data | safe }}`, //assign data to table
+    data: `{{ table_data | safe }}`, //assign data to table
     layout:"fitColumns", //fit columns to width of table (optional)
     selectableRows: true,
     selectable: true,
@@ -697,7 +757,8 @@ const table = new Tabulator("#employee_table", {
           }
         },
         {title:"Position", field:"position", width:150, headerFilter:"input"},
-        {title:"Portfolio Assigned", field:"portfolio_assigned", width:300, headerFilter:"input"},
+        {title:"Portfolio Assigned", field:"portfolio_assigned_names", width:300, headerFilter:"input"},
+        {title:"Portfolio Assigned", field:"portfolio_assigned", width:300, visible: false},
         {title:"Manager Name", field:"manager_name", width:150},
         {
           title:"Employee Type", 
@@ -867,6 +928,12 @@ Dropzone.options.myDropzone = {
     })
   }
 }
+
+
+$('#portfolio_assigned').select2({
+  theme: 'bootstrap-5',
+  closeOnSelect: false
+})
 
 </script>
 {% endblock %}

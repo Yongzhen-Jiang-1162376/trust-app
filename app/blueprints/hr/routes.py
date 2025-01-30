@@ -34,6 +34,10 @@ def employee_list():
             'name': 'Position'
         },
         {
+            'id': 'portfolio_assigned_names',
+            'name': 'Portfolio Assigned'
+        },
+        {
             'id': 'portfolio_assigned',
             'name': 'Portfolio Assigned'
         },
@@ -121,7 +125,8 @@ def employee_list():
             e.full_name,
             e.gender,
             e.position,
-            e.portfolio_assigned,
+            GROUP_CONCAT(ep.portfolio ORDER BY ep.id SEPARATOR ', ') AS portfolio_assigned_names,
+            GROUP_CONCAT(ep.id ORDER BY ep.id SEPARATOR ', ') AS portfolio_assigned,
             e.manager_name,
             e.employee_type,
             e.mode_of_work,
@@ -141,6 +146,9 @@ def employee_list():
             e.leave_reason,
             e.comments
         FROM hr_employee e
+        LEFT JOIN hr_employee_portfolio_assigned epa ON e.id = epa.employee_id
+        LEFT JOIN hr_employee_portfolio ep ON epa.portfolio_id = ep.id
+        GROUP BY e.id
         ORDER BY e.id
     '''
     
@@ -149,11 +157,22 @@ def employee_list():
     employee_schema = EmployeeSchema(many=True)
 
     # serialize to json string
-    json_str = employee_schema.dumps(result)
+    table_data = employee_schema.dumps(result)
     
     # print(json_str)
     
-    return render_template('hr/employee_list.html', columns=columns, data=json_str)
+    sql = """
+        SELECT
+            p.id,
+            p.portfolio
+        FROM hr_employee_portfolio p
+        ORDER BY p.id
+    """
+    portfolio_list = db.session.execute(text(sql)).fetchall()
+    
+    print(table_data)
+    
+    return render_template('hr/employee_list.html', portfolio_list =portfolio_list, columns=columns, table_data=table_data)
 
 
 @bp.route('/employees/create', methods=('GET', 'POST'))

@@ -15,6 +15,7 @@ class EmployeeSchema(Schema):
     mode_of_work = fields.Str()
     volunteer_current_status = fields.Str()
     hours_per_week = fields.Str()
+    portfolio_assigned_names = fields.Str()
     portfolio_assigned = fields.Str()
     manager_name = fields.Str()
     address = fields.Str()
