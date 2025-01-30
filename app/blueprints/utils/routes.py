@@ -14,7 +14,7 @@ def generate_fake_emp():
         'full_name': fake.name(),
         'gender': random.choice(['Male', 'Female']),
         'position': random.choice(['Engineer', 'Manager', 'Supervisor', 'Administrator', 'Director']),
-        'portfolio_assigned': fake.job(),
+        # 'portfolio_assigned': fake.job(),
         'manager_name': fake.name(),
         'employee_type': random.choice(['Employee', 'Volunteer']),
         'mode_of_work': random.choice(['Onsite', 'Remote', 'Hybrid']),
@@ -43,7 +43,7 @@ def create_fake_employees():
     
     employees = []
     
-    for i in range(50):
+    for i in range(10):
         employees.append(generate_fake_emp())
     
     sql = '''
@@ -52,7 +52,6 @@ def create_fake_employees():
             full_name, 
             gender,
             position,
-            portfolio_assigned,
             manager_name,
             employee_type,
             mode_of_work,
@@ -75,7 +74,6 @@ def create_fake_employees():
             :full_name,
             :gender,
             :position,
-            :portfolio_assigned,
             :manager_name,
             :employee_type,
             :mode_of_work,
