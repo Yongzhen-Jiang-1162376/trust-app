@@ -15,27 +15,27 @@
 <div class="container">
     <div class="row">
         <div class="col-6">
-            <form id="createForm">
+            <form id="createForm" method="post">
                 <div class="mb-3">
                     <label for="group_id" class="form-label">Porfolio Group</label>
                     <select type="text" class="form-select" id="group_id" name="group_id">
-                    {% for group in group_list %}
-                    <option value="group['id']">{{ group['group_name'] }}</option>
-                    {% endfor %}
+                        {% for gl in group_list %}
+                        <option value="{{ gl['id'] }}">{{ gl["group_name"] }}</option>
+                        {% endfor %}
                     </select>
                 </div>
                 <div class="mb-3">
-                    <label for="group_name" class="form-label">Portfolio</label>
-                    <input type="text" class="form-control" id="group_name" name="group_name">
+                    <label for="portfolio" class="form-label">Portfolio</label>
+                    <input type="text" class="form-control" id="portfolio" name="portfolio">
                 </div>
                
                 <div>
-                    {% if(error) %}
-                        {{error}}
+                    {% if error %}
+                        <span class="text-danger">{{ error }}</span>
                     {% endif %}
                 </div>
 
-                <button type="button" id="submitButton" class="btn btn-primary form-control mt-3 mb-5">Submit</button>
+                <button type="submit" id="submitButton" class="btn btn-primary form-control mt-3 mb-5">Submit</button>
             </form>
 
             <input type="text" id="employee_id" class="d-none" disabled>

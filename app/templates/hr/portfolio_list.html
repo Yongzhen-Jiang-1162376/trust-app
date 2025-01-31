@@ -5,10 +5,10 @@
 
 <div class="d-flex justify-content-between mb-1 mt-4">
     <div class="d-flex">
-        <a type="button" href="{{ url_for('hr.employee_create') }}" class="btn btn-primary btn-sm" style="color: white;width: 150px;">Add new portfolio</a>
+        <a type="button" href="{{ url_for('hr.portfolio_create') }}" class="btn btn-primary btn-sm" style="color: white;width: 150px;">Add new portfolio</a>
     </div>
     <div class="d-flex">
-        <form accept="{{ url_for('hr.employee_list') }}" method="get">
+        <form accept="{{ url_for('hr.portfolio_list') }}" method="get">
           <button type="submite" class="btn btn-info btn-sm ms-2">Refresh</button>
         </form>
         <button type="button" class="btn btn-danger btn-sm ms-2" onclick="deletePortfolios()">Delete</button>
@@ -21,9 +21,6 @@
       <a type="button" href="{{ url_for('hr.employee_create') }}" class="btn btn-primary btn-sm" style="color: white;width: 250px;">Add new portfolio group</a>
   </div>
   <div class="d-flex">
-      <form accept="{{ url_for('hr.employee_list') }}" method="get">
-        <button type="submite" class="btn btn-info btn-sm ms-2">Refresh</button>
-      </form>
       <button type="button" class="btn btn-danger btn-sm ms-2" onclick="deleteEmployees()">Delete</button>
   </div>
 </div>

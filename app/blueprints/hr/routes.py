@@ -1,4 +1,4 @@
-from flask import render_template, request, jsonify, current_app
+from flask import render_template, request, jsonify, current_app, redirect, url_for
 from app.blueprints.hr import bp
 from app.models.hr import Employee
 from app.schemas.hr import EmployeeSchema, PortfolioGroupSchema, PortfolioSchema
@@ -220,3 +220,57 @@ def portfolio_list():
     print(portfolio_list)
 
     return render_template('hr/portfolio_list.html', group_list=group_list, portfolio_list=portfolio_list)
+
+
+@bp.route('/portfolio/create', methods=('GET', 'POST'))
+@login_required
+def portfolio_create():
+    error = None
+
+    sql = """
+        SELECT
+            id,
+            group_name
+        FROM hr_employee_portfolio_group
+        ORDER BY id
+    """
+    result = db.session.execute(text(sql)).fetchall()
+
+    group_schema = PortfolioGroupSchema(many=True)
+    group_list = group_schema.dump(result)
+
+    if request.method == 'POST':
+        group_id = request.form.get('group_id')
+        portfolio = request.form.get('portfolio')
+
+        if not portfolio:
+            error = 'portfolio is empty'
+            return render_template('hr/portfolio_create.html', group_list=group_list, error=error)
+        
+        sql = """
+            SELECT
+                id
+            FROM hr_employee_portfolio
+            WHERE group_id = :group_id AND portfolio = :portfolio
+        """
+
+        params = {
+            'group_id': group_id,
+            'portfolio': portfolio
+        }
+
+        result = db.session.execute(text(sql), params).fetchall()
+
+        if len(result) > 0:
+            error = 'Portfolio already existed'
+            return render_template('hr/portfolio_create.html', group_list=group_list, error=error)
+
+        sql = """
+            INSERT INTO hr_employee_portfolio (group_id, portfolio) VALUES (:group_id, :portfolio);
+        """
+        db.session.execute(text(sql), params)
+        db.session.commit()
+
+        return redirect(url_for('hr.portfolio_list'))
+    
+    return render_template('hr/portfolio_create.html', group_list=group_list, error=error)
