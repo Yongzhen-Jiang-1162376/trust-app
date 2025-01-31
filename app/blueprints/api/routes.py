@@ -131,6 +131,24 @@ def import_employee_data(data):
     db.session.commit()
 
 
+def remove_portfolio(id):
+    sql = """
+        DELETE FROM hr_employee_portfolio_assigned
+        WHERE portfolio_id = :portfolio_id;
+
+        DELETE FROM hr_employee_portfolio
+        WHERE id = :id;
+    """
+    
+    params = {
+        'id': id,
+        'portfolio_id': id
+    }
+
+    db.session.execute(text(sql), params)
+    db.session.commit()
+
+
 @bp.route('/upload-employee-document', methods=('POST',))
 def upload_employee_document():
     if 'file' not in request.files:
@@ -202,8 +220,8 @@ def upload_employee_document():
     db.session.execute(text(sql), params)
     db.session.commit()
 
-
     return jsonify({'message': f'File {file.filename} uploaded successfully'})
+
 
 @bp.route('/get-employee-documents', methods=('POST',))
 def get_employee_documents():
@@ -473,15 +491,44 @@ def change_user_password():
     password = data.get('password')
     password_confirm = data.get('password_confirm')
 
-    print(password)
-    print(password_confirm)
-
     if password != password_confirm:
         return jsonify({'status': 'error', 'message': 'Confirm password is not the same'}), 400
-
-    print(password)
 
     current_user.set_password(password)
     db.session.commit()
 
     return jsonify({'message': 'Password changed successfully'}), 200
+
+
+@bp.route('/update-portfolio', methods=('POST',))
+def update_portfolio():
+    data = request.get_json()
+
+    print('data')
+    print(data)
+
+    # id = data.get('id')
+    # portfolio = data.get('portfolio')
+
+    sql = """
+        UPDATE hr_employee_portfolio
+        SET portfolio = :portfolio
+        WHERE id = :id
+    """
+
+    db.session.execute(text(sql), data)
+    db.session.commit()
+
+    return jsonify({'message': 'Portfolio changed successfully'}), 200
+
+
+@bp.route('/remove-portfolio-list', methods=('POST',))
+def remove_portfolio_list():
+    data = request.get_json()
+    ids = data['ids']
+
+    # print(ids)
+
+    [remove_portfolio(id) for id in ids]
+
+    return jsonify({'message': 'Portfolio deleted successfully'}), 200

@@ -30,3 +30,14 @@ class EmployeeSchema(Schema):
     # leave_reason_id = fields.Int()
     leave_reason = fields.Str()
     comments = fields.Str()
+
+
+class PortfolioGroupSchema(Schema):
+    id = fields.Int(dump_only=True)
+    group_name = fields.Str()
+
+
+class PortfolioSchema(Schema):
+    id = fields.Int(dump_only=True)
+    group_name = fields.Str()
+    portfolio = fields.Str()

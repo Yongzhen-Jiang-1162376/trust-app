@@ -1,7 +1,7 @@
 from flask import render_template, request, jsonify, current_app
 from app.blueprints.hr import bp
 from app.models.hr import Employee
-from app.schemas.hr import EmployeeSchema
+from app.schemas.hr import EmployeeSchema, PortfolioGroupSchema, PortfolioSchema
 from sqlalchemy import select, text
 from app.extensions import db
 from marshmallow import EXCLUDE
@@ -171,7 +171,7 @@ def employee_list():
     return render_template('hr/employee_list.html', portfolio_list =portfolio_list, columns=columns, table_data=table_data)
 
 
-@bp.route('/employees/create', methods=('GET', 'POST'))
+@bp.route('/employees/create')
 @login_required
 def employee_create():
     
@@ -184,34 +184,39 @@ def employee_create():
     """
     portfolio_list = db.session.execute(text(sql)).fetchall()
     
-    # error = None
-    
-    # allow_none_fields = [
-    #     'date_of_birth', 
-    #     'start_date', 
-    #     'resignation_date', 
-    #     'last_working_date', 
-    #     'trial_period_start_date',
-    #     'hours_per_week',
-    #     'trial_period'
-    # ]
-    
-    # if (request.method == 'POST'):
-    #     emp_schema = EmployeeSchema(unknown=EXCLUDE)
-        
-    #     formData = request.form.to_dict()
-        
-    #     for key in formData.keys():
-    #         if key in allow_none_fields and formData[key] == '':
-    #             formData[key] = None
-                
-    #     files = request.files
-        
-    #     try:
-    #         emp_data = emp_schema.load(formData)
-        
-    #     except ValidationError as err:
-    #         error = err.messages
-    
-
     return render_template('hr/employee_create.html', portfolio_list=portfolio_list)
+
+
+@bp.route('/portfolios')
+@login_required
+def portfolio_list():
+
+    sql = """
+        SELECT
+            id,
+            group_name
+        FROM hr_employee_portfolio_group;
+    """
+    result = db.session.execute(text(sql)).fetchall()
+
+    group_schema = PortfolioGroupSchema(many=True)
+    group_list = group_schema.dumps(result)
+
+    sql = """
+        SELECT 
+            p.id,
+            pg.group_name,
+            p.portfolio
+        FROM hr_employee_portfolio p
+        INNER JOIN hr_employee_portfolio_group pg ON p.group_id = pg.id
+    """
+
+
+    result = db.session.execute(text(sql)).fetchall()
+    portfolio_schema = PortfolioSchema(many=True)
+    portfolio_list = portfolio_schema.dumps(result)
+
+    print(group_list)
+    print(portfolio_list)
+
+    return render_template('hr/portfolio_list.html', group_list=group_list, portfolio_list=portfolio_list)
