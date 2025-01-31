@@ -1,3 +1,5 @@
+ALTER TABLE hr_employee DROP COLUMN portfolio_assigned;
+
 CREATE TABLE `hr_employee_portfolio_group` (
 	`id` INT NOT NULL AUTO_INCREMENT,
 	`group_name` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
