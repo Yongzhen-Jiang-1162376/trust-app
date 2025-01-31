@@ -1,5 +1,5 @@
 from flask import render_template, request, redirect, url_for
-from flask_login import login_user, logout_user, login_required
+from flask_login import login_user, logout_user, login_required, current_user
 from app.blueprints.auth import bp
 from app.extensions import db
 from app.models.auth.models import User
@@ -91,3 +91,12 @@ def register():
 def logout():
     logout_user()
     return redirect(url_for('auth.login'))
+
+
+@bp.route('/profile')
+@login_required
+def profile():
+
+    print(current_user)
+
+    return render_template('auth/profile.html', current_user=current_user)

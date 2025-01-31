@@ -5,6 +5,7 @@ from sqlalchemy import Column, func, ForeignKey, Integer, String, DateTime, Bool
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy.sql import false, true
 from flask_login import UserMixin
+from werkzeug.security import generate_password_hash
 
 
 class User(UserMixin, db.Model):
@@ -25,3 +26,6 @@ class User(UserMixin, db.Model):
 
     def __repr__(self):
         return f'<User {self.email}>'
+    
+    def set_password(self, password):
+        self.password = generate_password_hash(password)

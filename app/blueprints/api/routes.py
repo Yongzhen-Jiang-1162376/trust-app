@@ -1,4 +1,5 @@
 from flask import request, jsonify, current_app, send_file
+from flask_login import current_user
 from sqlalchemy import text
 from app.blueprints.api import bp
 from app.extensions import db
@@ -412,8 +413,8 @@ def create_employee():
     
     sql += s
     
-    print('insertion sql')
-    print(sql)
+    # print('insertion sql')
+    # print(sql)
     
     db.session.execute(text(sql))
     db.session.commit()
@@ -447,3 +448,40 @@ def import_employee():
         return jsonify({'message': repr(e)}), 400
 
     return jsonify({'message': 'imported successfully'}), 200
+
+
+@bp.route('/change-user-name', methods=('POST',))
+def change_user_name():
+    data = request.get_json()
+
+    sql = """
+        UPDATE auth_user
+        SET full_name = :full_name
+        WHERE id = :id
+    """
+
+    db.session.execute(text(sql), data)
+    db.session.commit()
+
+    return jsonify({'message': 'User name changed successfully'}), 200
+
+
+@bp.route('/change-user-password', methods=('POST',))
+def change_user_password():
+    data = request.get_json()
+
+    password = data.get('password')
+    password_confirm = data.get('password_confirm')
+
+    print(password)
+    print(password_confirm)
+
+    if password != password_confirm:
+        return jsonify({'status': 'error', 'message': 'Confirm password is not the same'}), 400
+
+    print(password)
+
+    current_user.set_password(password)
+    db.session.commit()
+
+    return jsonify({'message': 'Password changed successfully'}), 200
