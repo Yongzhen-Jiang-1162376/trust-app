@@ -47,6 +47,7 @@ VALUES
 ('Trust Governance_Taumata Advisor Portfolio'), 
 ('Trust Corporate Portfolio'), 
 ('Trust Operations Management Portfolio')
+;
 
 /*
 UPDATE hr_employee_portfolio_group SET group_name = 'Trust Governance_Taumata Advisor Portfolio' WHERE id = 1;
@@ -88,5 +89,4 @@ VALUES (1, 'Health Advisors - Mental'),
 		 (3, 'Funding Mobilization Management Portfolio'),
 		 (3, 'Artificial Intelligence Management Portfolio'),
 		 (3, 'Cyber Security Management Portfolio')
-
-
+;
