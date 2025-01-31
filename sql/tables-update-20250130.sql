@@ -1,3 +1,43 @@
+CREATE TABLE `hr_employee_portfolio_group` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`group_name` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	PRIMARY KEY (`id`) USING BTREE
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=15
+;
+
+
+CREATE TABLE `hr_employee_portfolio` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`group_id` INT NOT NULL,
+	`portfolio` VARCHAR(255) NOT NULL COLLATE 'utf8mb4_0900_ai_ci',
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `group_id` (`group_id`) USING BTREE,
+	CONSTRAINT `hr_employee_portfolio_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `hr_employee_portfolio_group` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=41
+;
+
+CREATE TABLE `hr_employee_portfolio_assigned` (
+	`id` INT NOT NULL AUTO_INCREMENT,
+	`employee_id` INT NOT NULL,
+	`portfolio_id` INT NOT NULL,
+	PRIMARY KEY (`id`) USING BTREE,
+	INDEX `employee_id` (`employee_id`) USING BTREE,
+	INDEX `portfolio_id` (`portfolio_id`) USING BTREE,
+	CONSTRAINT `hr_employee_portfolio_assigned_ibfk_1` FOREIGN KEY (`employee_id`) REFERENCES `hr_employee` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION,
+	CONSTRAINT `hr_employee_portfolio_assigned_ibfk_2` FOREIGN KEY (`portfolio_id`) REFERENCES `hr_employee_portfolio` (`id`) ON UPDATE NO ACTION ON DELETE NO ACTION
+)
+COLLATE='utf8mb4_0900_ai_ci'
+ENGINE=InnoDB
+AUTO_INCREMENT=18
+;
+
+
 -- SELECT * FROM hr_employee_portfolio;
 -- SELECT * FROM hr_employee_portfolio_group;
 
