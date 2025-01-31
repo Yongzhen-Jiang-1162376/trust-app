@@ -429,6 +429,9 @@ flatpickr(".datepicker", {
 // ];
 
 const populateEditForm = function(rowData) {
+  // first need to clear multi select, otherwise it will keep the values selected last time
+  $('#portfolio_assigned').val([]).trigger('change')
+
   document.getElementById('id').value = rowData.id
   document.getElementById('full_name').value = rowData.full_name
   document.getElementById('gender').value = rowData.gender
