@@ -18,20 +18,20 @@
 
 <div class="d-flex justify-content-between mb-1 mt-4">
   <div class="d-flex">
-      <a type="button" href="{{ url_for('hr.employee_create') }}" class="btn btn-primary btn-sm" style="color: white;width: 250px;">Add new portfolio group</a>
+      <a type="button" href="{{ url_for('hr.portfolio_group_create') }}" class="btn btn-primary btn-sm" style="color: white;width: 250px;">Add new portfolio group</a>
   </div>
   <div class="d-flex">
-      <button type="button" class="btn btn-danger btn-sm ms-2" onclick="deleteEmployees()">Delete</button>
+      <button type="button" class="btn btn-danger btn-sm ms-2" onclick="deletePortfolioGroups()">Delete</button>
   </div>
 </div>
 <div id="portfolio_group_table" style="border: 1px solid gray;"></div>
 
 
-<!-- offcanvas for profile data edit -->
-<div class="offcanvas offcanvas-start custom-offcanvas-responsive" data-bs-backdrop="static" tabindex="-1" id="portfolioEdit" aria-labelledby="offcanvasBottomLabel">
+<!-- offcanvas for portfolio edit -->
+<div class="offcanvas offcanvas-start custom-offcanvas-responsive" data-bs-backdrop="static" tabindex="-1" id="portfolioEdit">
   <div class="offcanvas-header">
     <h5 class="offcanvas-title" id="offcanvasEditLabel">Portfolio Edit</h5>
-    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
   </div>
   <div class="offcanvas-body small pt-0">
     <div class="container my-4">
@@ -50,6 +50,29 @@
   </div>
 </div>
 
+<!-- offcanvas for portfolio group edit -->
+<div class="offcanvas offcanvas-start custom-offcanvas-responsive" data-bs-backdrop="static" tabindex="-1" id="portfolioGroupEdit">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="offcanvasGroupEditLabel">Portfolio Group Edit</h5>
+    <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas"></button>
+  </div>
+  <div class="offcanvas-body small pt-0">
+    <div class="container my-4">
+        <!-- <h4>Profile Edit</h4> -->
+        <form id="portfolioGroupEditForm">
+          <div class="mb-3">
+            <input type="hidden" class="form-control" id="group_id" name="group_id">
+          </div>
+          <div class="mb-3">
+            <label for="group_name" class="form-label">Portfolio Group</label>
+            <input type="text" class="form-control" id="group_name" name="group_name">
+          </div>
+          <button type="submit" class="btn btn-primary" id="portfolioGroupEditButton">Change</button>
+        </form>
+      </div>
+  </div>
+</div>
+
 
 
 {% endblock %}
@@ -63,7 +86,21 @@
 const updatePortfolio = async (data) => {
   const url = "{{ url_for('api.update_portfolio', _external=True) }}"
 
-  console.log(data)
+  const options = {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }
+
+  result = await fetch(url, options)
+
+  return result
+}
+
+const updatePortfolioGroup = async (data) => {
+  const url = "{{ url_for('api.update_portfolio_group', _external=True) }}"
 
   const options = {
     method: 'POST',
@@ -90,6 +127,29 @@ document.getElementById('portfolioEditButton').addEventListener('click', async f
   })
 
   const response = await updatePortfolio(data)
+  const result = await response.json()
+
+  if (!response.ok) {
+    notifyError(result.message)
+    return
+  }
+  else {
+    window.location.href = '/hr/portfolios'
+  }
+})
+
+document.getElementById('portfolioGroupEditButton').addEventListener('click', async function(e) {
+  e.preventDefault();
+
+  const form = document.getElementById('portfolioGroupEditForm')
+  const formData = new FormData(form)
+
+  data = {}
+  formData.forEach((value, key) => {
+    data[key] = value
+  })
+
+  const response = await updatePortfolioGroup(data)
   const result = await response.json()
 
   if (!response.ok) {
@@ -142,11 +202,55 @@ const deletePortfolios = async function() {
 }
 
 
+const deletePortfolioGroups = async function() {
+  let selectedRows = portfolioGroupTable.getSelectedRows()
+
+  if (selectedRows.length == 0) {
+    notifyWarning('No group selected')
+    return
+  }
+
+  if (!confirm('Are you sure to delete these portfolio groups?')) return
+
+  let ids = []
+  selectedRows.forEach(function(row) {
+    ids.push(row.getData().id)
+  })
+
+  const url = "{{ url_for('api.remove_portfolio_group_list', _external=True) }}"
+  const data = {
+    ids: ids
+  }
+
+  const options = {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(data)
+  }
+
+  response = await fetch(url, options)
+  const result = await response.json()
+
+  if (response.ok) {
+    portfolioGroupTable.deleteRow(ids)
+    notifySuccess(result.message)
+  }
+  else {
+    notifyError(result.message)
+  }
+}
+
 const populatePortfolioEditForm = function(rowData) {
   document.getElementById('id').value = rowData.id
   document.getElementById('portfolio').value = rowData.portfolio
 }
 
+const populatePortfolioGroupEditForm = function(rowData) {
+  document.getElementById('group_id').value = rowData.id
+  document.getElementById('group_name').value = rowData.group_name
+}
 
 const rowActions = function(cell, formatterParams, onRendered) {
     // e.stopPropagation();
@@ -164,6 +268,28 @@ const rowActions = function(cell, formatterParams, onRendered) {
     editButton.onclick = function(e) {
         e.stopPropagation();
         populatePortfolioEditForm(row.getData())
+    }
+    actionsDiv.appendChild(editButton)
+
+    return actionsDiv
+}
+
+const groupRowActions = function(cell, formatterParams, onRendered) {
+    // e.stopPropagation();
+
+    const row = cell.getRow();
+    const actionsDiv = document.createElement("div");
+
+    const editButton = document.createElement("button")
+    editButton.type = "button"
+    editButton.innerText = "Edit"
+    editButton.className = "btn btn-info btn-sm ms-2"
+    editButton.setAttribute("data-bs-toggle", "offcanvas")
+    editButton.setAttribute("data-bs-target", "#portfolioGroupEdit")
+    // editButton.setAttribute("aria-controls", "offcanvasEdit")
+    editButton.onclick = function(e) {
+        e.stopPropagation();
+        populatePortfolioGroupEditForm(row.getData())
     }
     actionsDiv.appendChild(editButton)
 
@@ -211,7 +337,7 @@ const portfolioGroupTable = new Tabulator("#portfolio_group_table", {
         {
             title: 'Actions',
             field: 'actions',
-            formatter: rowActions,
+            formatter: groupRowActions,
             width: 165,
             hozAlign: 'center',
         },

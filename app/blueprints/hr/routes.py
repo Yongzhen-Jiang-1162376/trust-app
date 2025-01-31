@@ -274,3 +274,44 @@ def portfolio_create():
         return redirect(url_for('hr.portfolio_list'))
     
     return render_template('hr/portfolio_create.html', group_list=group_list, error=error)
+
+
+
+@bp.route('/portfoliogroup/create', methods=('GET', 'POST'))
+@login_required
+def portfolio_group_create():
+    error = None
+
+    if request.method == 'POST':
+        group_name = request.form.get('group_name')
+
+        if not group_name:
+            error = 'portfolio group is empty'
+            return render_template('hr/portfolio_group_create.html', error=error)
+        
+        sql = """
+            SELECT
+                id
+            FROM hr_employee_portfolio_group
+            WHERE group_name = :group_name
+        """
+
+        params = {
+            'group_name': group_name
+        }
+
+        result = db.session.execute(text(sql), params).fetchall()
+
+        if len(result) > 0:
+            error = 'Portfolio group already existed'
+            return render_template('hr/portfolio_group_create.html', error=error)
+
+        sql = """
+            INSERT INTO hr_employee_portfolio_group (group_name) VALUES (:group_name);
+        """
+        db.session.execute(text(sql), params)
+        db.session.commit()
+
+        return redirect(url_for('hr.portfolio_list'))
+    
+    return render_template('hr/portfolio_group_create.html', error=error)

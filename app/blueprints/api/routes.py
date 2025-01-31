@@ -131,21 +131,30 @@ def import_employee_data(data):
     db.session.commit()
 
 
-def remove_portfolio(id):
+def remove_portfolio(ids):
     sql = """
         DELETE FROM hr_employee_portfolio_assigned
-        WHERE portfolio_id = :portfolio_id;
+        WHERE portfolio_id in :portfolio_ids;
 
         DELETE FROM hr_employee_portfolio
-        WHERE id = :id;
+        WHERE id in :ids;
     """
     
     params = {
-        'id': id,
-        'portfolio_id': id
+        'ids': ids,
+        'portfolio_ids': ids
     }
 
     db.session.execute(text(sql), params)
+    db.session.commit()
+
+
+def remove_portfolio_group(ids):
+    sql = """
+        DELETE FROM hr_employee_portfolio_group WHERE id in :ids;
+    """
+
+    db.session.execute(text(sql), {'ids': ids})
     db.session.commit()
 
 
@@ -504,12 +513,6 @@ def change_user_password():
 def update_portfolio():
     data = request.get_json()
 
-    print('data')
-    print(data)
-
-    # id = data.get('id')
-    # portfolio = data.get('portfolio')
-
     sql = """
         UPDATE hr_employee_portfolio
         SET portfolio = :portfolio
@@ -529,6 +532,45 @@ def remove_portfolio_list():
 
     # print(ids)
 
-    [remove_portfolio(id) for id in ids]
+    remove_portfolio(ids)
+
+    return jsonify({'message': 'Portfolio deleted successfully'}), 200
+
+
+@bp.route('/update-portfolio-group', methods=('POST',))
+def update_portfolio_group():
+    data = request.get_json()
+
+    sql = """
+        UPDATE hr_employee_portfolio_group
+        SET group_name = :group_name
+        WHERE id = :group_id
+    """
+
+    db.session.execute(text(sql), data)
+    db.session.commit()
+
+    return jsonify({'message': 'Portfolio group changed successfully'}), 200
+
+
+@bp.route('/remove-portfolio-group-list', methods=('POST',))
+def remove_portfolio_group_list():
+    data = request.get_json()
+    ids = data['ids']
+
+
+    sql = """
+        SELECT * FROM hr_employee_portfolio WHERE group_id IN :ids
+    """
+
+    result = db.session.execute(text(sql), {'ids': ids}).fetchall()
+
+    if len(result) > 0:
+        return jsonify({'status': 'error', 'message': 'Portfolio exists in this group.'}), 400
+
+
+    remove_portfolio_group(ids)
+
+    # [remove_portfolio_group(id) for id in ids]
 
     return jsonify({'message': 'Portfolio deleted successfully'}), 200
