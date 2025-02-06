@@ -33,13 +33,17 @@ const rowActions = function(cell, formatterParams, onRendered) {
     // e.stopPropagation();
 
     const row = cell.getRow();
+    const userid = row.getData().id;
     const actionsDiv = document.createElement("div");
 
-    const editButton = document.createElement("button")
+    const editButton = document.createElement("a")
     editButton.type = "button"
     editButton.innerText = "Edit"
     editButton.className = "btn btn-info btn-sm ms-2"
+    editButton.href = "/auth/user-edit?userid=" + userid
     // editButton.setAttribute("aria-controls", "offcanvasEdit")
+
+    actionsDiv.append(editButton)
 
     return actionsDiv
 }
@@ -71,13 +75,7 @@ const usersTable = new Tabulator("#users_table", {
         {title:"No.", field:"row_num", width:80, formatter:rowNumberFormatter},
         {title:"Internal Id", field:"id", width:80, visible: false},
         {title:"Full Name", field:"full_name"},
-        {
-            title: "Blocked", 
-            field: "is_blocked",
-            formatter: "tickCross",
-            editor: false,
-            validator: "boolean"
-        },
+        {title:"Email", field:"email"},
         {
             title: "Admin", 
             field: "is_superadmin",
@@ -85,8 +83,13 @@ const usersTable = new Tabulator("#users_table", {
             editor: false,
             validator: "boolean"
         },
-        {title:"Full Name", field:"full_name"},
-        
+        {
+            title: "Blocked", 
+            field: "is_blocked",
+            formatter: "tickCross",
+            editor: false,
+            validator: "boolean"
+        },
         {
             title: 'Actions',
             field: 'actions',

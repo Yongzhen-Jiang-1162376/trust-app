@@ -137,3 +137,28 @@ def user_manage():
     print(data)
 
     return render_template('auth/user_manage.html', data=data)
+
+
+@bp.route('/user-edit', methods=['GET', 'POST'])
+@login_required
+@superadmin_required()
+def user_edit():
+    if request.method == 'POST':
+        pass
+    
+    userid = request.args.get('userid')
+    
+    
+    data = User.query.filter_by(id=userid).one()
+    
+    print('-----------------user--------------------')
+    # print(user)
+    print(data.is_superadmin)
+    print(data.is_blocked)
+    
+    # user_schema = AuthUserSchema()
+    # data = user_schema.dumps(user)
+    
+    print(data)
+    
+    return render_template('auth/user_edit.html', data=data)

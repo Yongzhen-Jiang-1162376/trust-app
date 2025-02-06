@@ -1,0 +1,171 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-start">
+    <!-- <a 
+        type="button" 
+        class="btn btn-outline-primary btn-sm me-5 pt-2" 
+        style="width: 80px;"
+        href="{{ url_for('hr.employee_list') }}"
+    >Back</a> -->
+    <h3>User Edit</h3>
+</div>
+
+
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <form id="changeNameForm" method="post">
+                <div class="mb-3">
+                    <input type="hidden" class="form-control" id="id" name="id" value="{{ data['id'] }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="text" class="form-control" id="email" name="email" value="{{ data['email'] }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="full_name" class="form-label">Name</label>
+                    <input type="text" class="form-control" id="full_name" name="full_name" value="{{ data.full_name }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="is_superadmin" class="form-label">Is Admin</label>
+                    <div>
+                        <input class="form-check-input" type="checkbox" id="is_superadmin" name="is_superadmin" value="{{ current_user.full_name }}">
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="is_blocked" class="form-label">Is Blocked</label>
+                    <div>
+                        <input class="form-check-input" type="checkbox" id="is_blocked" name="is_blocked" value="{{ current_user.full_name }}">
+                    </div>
+                </div>
+
+                <div class="fs-6">Portfolios</div>
+
+                <div class="mb-3">
+                    <input class="form-check-input" type="checkbox">
+                    <label class="form-check-label" for="">Portfoio Loop</label>
+                </div>
+
+
+                <button type="button" id="changeUserNameButton" class="btn btn-primary form-control mt-3 mb-5">Change Name</button>
+            </form>
+
+            <form id="changePasswordForm" method="post">
+                <div class="mb-3">
+                    <input type="hidden" class="form-control" id="user_id" name="user_id" value="{{ current_user.id }}">
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">New Password</label>
+                    <input type="password" class="form-control" id="password" name="password">
+                </div>
+
+                <div class="mb-3">
+                    <label for="email" class="form-label">Confirm Password</label>
+                    <input type="password" class="form-control" id="password_confirm" name="password_confirm">
+                </div>
+                <button type="button" id="changeUserPasswordButton" class="btn btn-primary form-control mt-3 mb-5">Change Password</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+
+const changeUserName = async function(data) {
+    const url = "{{ url_for('api.change_user_name', _external=True) }}"
+
+    const options = {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }
+
+    result = await fetch(url, options)
+    return result
+}
+
+const changeUserPassword = async function(data) {
+    console.log(data)
+
+    const url = "{{ url_for('api.change_user_password', _external=True) }}"
+
+    const options = {
+        method: 'POST',
+        headers: {
+            'content-type': 'application/json'
+        },
+        body: JSON.stringify(data)
+    }
+
+    result = await fetch(url, options)
+    return result
+}
+
+
+document.getElementById("changeUserNameButton").addEventListener('click', async function() {
+    // submit form date and return new employee id
+    const form = document.getElementById('changeNameForm')
+    const formData = new FormData(form)
+
+    const data = {}
+    formData.forEach((value, key) => {
+        data[key] = value
+    })
+
+    const response = await changeUserName(data)
+
+    if (!response.ok) {
+        error = await response.json()
+        notifyError(error.message)
+        return
+    }
+
+    else {
+        result = await response.json()
+        notifySuccess(result.message)
+    }
+
+})
+
+document.getElementById("changeUserPasswordButton").addEventListener('click', async function() {
+    // submit form date and return new employee id
+    const form = document.getElementById('changePasswordForm')
+    const formData = new FormData(form)
+
+    const data = {}
+    formData.forEach((value, key) => {
+        data[key] = value
+    })
+
+    const response = await changeUserPassword(data)
+
+    if (!response.ok) {
+        error = await response.json()
+        notifyError(error.message)
+        return
+    }
+
+    else {
+        result = await response.json()
+        notifySuccess(result.message)
+    }
+
+})
+
+
+</script>
+
+
+{% endblock %}
