@@ -1,1 +1,7 @@
-from .models import Employee, EmployeeDocument
+from .models import (
+    Employee, 
+    EmployeeDocument, 
+    EmployeePortfolio, 
+    EmployeePortfolioAssigned, 
+    EmployeePortfolioGroup
+)

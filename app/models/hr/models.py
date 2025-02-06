@@ -4,6 +4,8 @@ from datetime import datetime, date
 from typing import Optional
 from sqlalchemy import Column, func, ForeignKey, Integer, Float, String, Text, DateTime, Boolean, Date
 from sqlalchemy.orm import Mapped, mapped_column, relationship
+from app.models.association import user_portfolio_association
+
 
 GenderType = Literal['Female', 'Male']
 EmployeeType = Literal['Employee', 'Volunteer']
@@ -87,7 +89,8 @@ class EmployeePortfolio(db.Model):
     
     id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
     group_id: Mapped[int] = mapped_column(ForeignKey('hr_employee_portfolio_group.id'))
-    portfolio: Mapped[str] = mapped_column(String(255))
+    portfolio: Mapped[str] = mapped_column(String(255))    
+    users: Mapped[list['User']] = relationship(secondary=user_portfolio_association, back_populates="users")
 
 
 class EmployeePortfolioAssigned(db.Model):
