@@ -7,7 +7,7 @@ from sqlalchemy.sql import false, true
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash
 from app.extensions import Base
-from app.models.hr import EmployeePortfolio
+# from app.models.hr import EmployeePortfolio
 from app.models.association import user_portfolio_association
 
 
@@ -24,7 +24,7 @@ class User(UserMixin, db.Model):
     is_active: Mapped[bool] = mapped_column(Boolean, default=True, server_default=text("1"))
     is_blocked: Mapped[bool] = mapped_column(Boolean, default=False, server_default=text("0"))
     
-    portfolios: Mapped[list[EmployeePortfolio]] = relationship(secondary=user_portfolio_association, back_populates="portfolios")
+    portfolios: Mapped[list['hr_employee_portfolio']] = relationship("EmployeePortfolio", secondary=user_portfolio_association, back_populates="users")
     
     created_at: Mapped[Optional[datetime]] = mapped_column(DateTime, default=func.now())
     created_by_id = mapped_column(Integer, nullable=True)
