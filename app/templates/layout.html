@@ -87,8 +87,17 @@
               <ul class="nav flex-column mb-auto">
                 <li class="nav-item">
                   <a class="nav-link d-flex gap-2" href="{{ url_for('auth.profile') }}">
-                    <i class="bi bi-person"></i>
-                    Account
+                    <i class="bi bi-person-fill"></i>
+                    Profile
+                  </a>
+                </li>
+              </ul>
+
+              <ul class="nav flex-column mb-auto {%if not current_user.is_superadmin %}d-none{% endif %}">
+                <li class="nav-item">
+                  <a class="nav-link d-flex gap-2" href="{{ url_for('auth.user_manage') }}">
+                    <i class="bi bi-people-fill"></i>
+                    User Mgt
                   </a>
                 </li>
               </ul>

@@ -1,0 +1,103 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-start">
+    <!-- <a 
+        type="button" 
+        class="btn btn-outline-primary btn-sm me-5 pt-2" 
+        style="width: 80px;"
+        href="{{ url_for('hr.employee_list') }}"
+    >Back</a> -->
+    <h3>User Management</h3>
+</div>
+
+User Management Page
+
+<div id="users_table" style="border: 1px solid gray;"></div>
+
+{% endblock %}
+
+
+
+{% block scripts %}
+<script>
+const rowNumberFormatter = function(cell, formatterParams, onRendered) {
+    const table = cell.getTable()
+    const page = table.getPage()
+    const pageSize = table.getPageSize()
+    const rowIndexOnPage = cell.getRow().getPosition()
+    return (page - 1) * pageSize + rowIndexOnPage
+}
+
+const rowActions = function(cell, formatterParams, onRendered) {
+    // e.stopPropagation();
+
+    const row = cell.getRow();
+    const actionsDiv = document.createElement("div");
+
+    const editButton = document.createElement("button")
+    editButton.type = "button"
+    editButton.innerText = "Edit"
+    editButton.className = "btn btn-info btn-sm ms-2"
+    // editButton.setAttribute("aria-controls", "offcanvasEdit")
+
+    return actionsDiv
+}
+
+const usersTable = new Tabulator("#users_table", {
+    //minHeight: "650px", // set height of table (in CSS or here), this enables the Virtual DOM and improves render speed dramatically (can be any valid css height value)
+    data: `{{ data | safe }}`, //assign data to table
+    layout:"fitColumns", //fit columns to width of table (optional)
+    selectableRows: true,
+    selectable: true,
+    pagination: "local",
+    paginationSize: 15,
+    paginationSizeSelector: [10, 15, 20, 50, 100],
+    paginationCounter: "rows",
+    rowHeader: {
+        headerSort: false,
+        resizable: false,
+        width: 50,
+        frozen: true,
+        headerHozAlign: "center",
+        hozAlign: "center",
+        formatter: "rowSelection",
+        titleFormatter: "rowSelection",
+        cellClick: function(e, cell) {
+            cell.getRow().toggleSelect()
+        }
+    },
+    columns:[ //Define Table Columns
+        {title:"No.", field:"row_num", width:80, formatter:rowNumberFormatter},
+        {title:"Internal Id", field:"id", width:80, visible: false},
+        {title:"Full Name", field:"full_name"},
+        {
+            title: "Blocked", 
+            field: "is_blocked",
+            formatter: "tickCross",
+            editor: false,
+            validator: "boolean"
+        },
+        {
+            title: "Admin", 
+            field: "is_superadmin",
+            formatter: "tickCross",
+            editor: false,
+            validator: "boolean"
+        },
+        {title:"Full Name", field:"full_name"},
+        
+        {
+            title: 'Actions',
+            field: 'actions',
+            formatter: rowActions,
+            width: 165,
+            hozAlign: 'center',
+        },
+    ],
+});
+
+</script>
+
+
+{% endblock %}

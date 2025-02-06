@@ -5,6 +5,9 @@ from app.extensions import db
 from app.models.auth import User
 from sqlalchemy import text
 from werkzeug.security import generate_password_hash, check_password_hash
+from app.decorators import superadmin_required
+from app.schemas.auth.schema import AuthUserSchema
+import json
 
 
 # @bp.route('/')
@@ -24,9 +27,9 @@ def login():
 
         user = User.query.filter_by(email=email).first()
 
-        print('--------- user ---------')
-        print(user)
-        print(check_password_hash(user.password, password) if user else False)
+        # print('--------- user ---------')
+        # print(user)
+        # print(check_password_hash(user.password, password) if user else False)
 
         if not user or not check_password_hash(user.password, password):
             error = 'Incorrect email or password'
@@ -46,14 +49,14 @@ def register():
 
         user = User.query.filter_by(email=email).first()
 
-        print('---------- user -----------')
-        print(user)
+        # print('---------- user -----------')
+        # print(user)
 
         if user:
             return redirect(url_for('auth.login'))
         
-        print('-------- registering ----------')
-        print(name, email, password)
+        # print('-------- registering ----------')
+        # print(name, email, password)
 
         sql = '''
             INSERT INTO auth_user
@@ -97,6 +100,40 @@ def logout():
 @login_required
 def profile():
 
-    print(current_user)
+    # print(current_user)
 
     return render_template('auth/profile.html', current_user=current_user)
+
+
+@bp.route('/user-manage')
+@login_required
+@superadmin_required()
+def user_manage():
+
+    # sql = """
+    #     SELECT
+    #         u.id,
+    #         u.email,
+    #         u.full_name,
+    #         u.is_blocked,
+    #         u.is_superadmin,
+    #         u.title,
+    #         p.id AS portfolio_id,
+    #         p.group_id,
+    #         p.portfolio
+    #     FROM 
+    #     auth_user u
+    #     LEFT JOIN auth_user_portfolio up ON u.id = up.user_id
+    #     LEFT JOIN hr_employee_portfolio p ON p.id = up.portfolio_id
+    #     ORDER BY u.id
+    # """
+    
+    # result = db.session.execute(text(sql)).fetchall()
+    users = User.query.all()
+
+    user_schema = AuthUserSchema(many=True)
+    data = user_schema.dumps(users)
+
+    print(data)
+
+    return render_template('auth/user_manage.html', data=data)
