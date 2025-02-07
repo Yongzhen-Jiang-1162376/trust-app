@@ -13,10 +13,10 @@
         </form>
         <button type="button" class="btn btn-danger btn-sm ms-2" onclick="deleteEmployees()">Delete</button>
         <button type="button" class="btn btn-secondary btn-sm ms-2 {% if not current_user.is_superadmin %}d-none{% endif %}" onclick="exportEmployeeData()">Export</button>
-        <button type="button" class="btn btn-success btn-sm ms-2" data-bs-toggle="modal" data-bs-target="#importModal">Import</button>
+        <button type="button" class="btn btn-success btn-sm ms-2 d-none" data-bs-toggle="modal" data-bs-target="#importModal">Import</button>
         <a 
           type="button" 
-          class="btn btn-primary btn-sm ms-2" 
+          class="btn btn-primary btn-sm ms-2 d-none" 
           style="color: white;"
           href="{{ url_for('utils.download_file', name='hr/Raw database.xlsx') }}"
         >Download Template</a>
