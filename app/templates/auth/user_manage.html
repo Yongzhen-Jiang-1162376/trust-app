@@ -36,12 +36,18 @@ const rowActions = function(cell, formatterParams, onRendered) {
 
     const editButton = document.createElement("a")
     editButton.type = "button"
-    editButton.innerText = "Edit"
+    editButton.innerText = "View & Edit"
     editButton.className = "btn btn-info btn-sm ms-2"
     editButton.href = "/auth/user-edit?userid=" + userid
     // editButton.setAttribute("aria-controls", "offcanvasEdit")
-
     actionsDiv.append(editButton)
+
+    const changePasswordButton = document.createElement("a")
+    changePasswordButton.type = "button"
+    changePasswordButton.innerText = "Change Password"
+    changePasswordButton.className = "btn btn-danger btn-sm ms-2"
+    changePasswordButton.href = "/auth/change-user-password?userid=" + userid
+    actionsDiv.append(changePasswordButton)
 
     return actionsDiv
 }
@@ -92,7 +98,7 @@ const usersTable = new Tabulator("#users_table", {
             title: 'Actions',
             field: 'actions',
             formatter: rowActions,
-            width: 165,
+            width: 300,
             hozAlign: 'center',
         },
     ],

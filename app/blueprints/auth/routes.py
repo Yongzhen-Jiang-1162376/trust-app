@@ -23,13 +23,7 @@ def login():
         password = request.form.get('password')
         remember = True if request.form.get('remember') else False
 
-        print(email, password, remember)
-
         user = User.query.filter_by(email=email).first()
-
-        # print('--------- user ---------')
-        # print(user)
-        # print(check_password_hash(user.password, password) if user else False)
 
         if not user or not check_password_hash(user.password, password):
             error = 'Incorrect email or password'
@@ -51,15 +45,9 @@ def register():
 
         user = User.query.filter_by(email=email).first()
 
-        # print('---------- user -----------')
-        # print(user)
-
         if user:
             return redirect(url_for('auth.login'))
         
-        # print('-------- registering ----------')
-        # print(name, email, password)
-
         sql = '''
             INSERT INTO auth_user
             (
@@ -102,8 +90,6 @@ def logout():
 @login_required
 def profile():
 
-    # print(current_user)
-
     return render_template('auth/profile.html', current_user=current_user)
 
 
@@ -135,8 +121,6 @@ def user_manage():
 
     user_schema = AuthUserSchema(many=True)
     data = user_schema.dumps(users)
-
-    print(data)
 
     return render_template('auth/user_manage.html', data=data)
 
@@ -194,14 +178,6 @@ def user_edit():
             values = ', '.join([f'({id}, {p})' for p in portfolios])
             sql = sql + values
             
-            # print('------------------sql------------------')
-            # print(sql)
-            
-            # params = {
-            #     'user_id': id,
-            #     'portfolios': tuple(portfolios)
-            # }
-            
             db.session.execute(text(sql))
             db.session.commit()
         
@@ -237,9 +213,6 @@ def user_edit():
     
     # user_data = User.query.filter_by(id=userid).one()
     
-    print('--------------------------- user data ----------------------------------')
-    print(user_data)
-    
     # user_schema = AuthUserSchema()
     # data = user_schema.dumps(user)
     
@@ -274,10 +247,37 @@ def user_edit():
         'portfolios': portfolio_data
     }
     
-    print('---------------------------data--------------------')
-    # print(user_data.is_superadmin)
-    # print(user_data.portfolios)
-    # print(user_data['is_superadmin'])
-    print(data)
-    
     return render_template('auth/user_edit.html', data=data)
+
+
+@bp.route('/change-user-password', methods=('GET', 'POST'))
+def change_user_password():
+    error = None
+    if request.method == 'POST':
+        user_id = request.form.get('user_id')
+        password = request.form.get('password')
+        password_confirm = request.form.get('password_confirm')
+
+        if password == password_confirm:
+            user = User.query.filter_by(id=user_id).first()
+            user.set_password(password)
+            db.session.commit()
+            
+            return redirect(url_for('auth.user_manage'))
+        else:  
+            error = 'Password and confirm password are not the same'
+
+    user_id = request.args.get("userid")
+    
+    sql = """
+        SELECT
+            id,
+            email,
+            full_name
+        FROM auth_user
+        WHERE id = :user_id
+    """
+    
+    data = db.session.execute(text(sql), {'user_id': user_id}).mappings().one()
+    
+    return render_template('auth/user_change_password.html', data=data, error=error)
