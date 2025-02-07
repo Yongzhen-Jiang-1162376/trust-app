@@ -11,160 +11,100 @@
     <h3>User Edit</h3>
 </div>
 
-
+<form method="post">
 <div class="container">
     <div class="row">
         <div class="col-6">
-            <form id="changeNameForm" method="post">
-                <div class="mb-3">
-                    <input type="hidden" class="form-control" id="id" name="id" value="{{ data['id'] }}">
+            <div class="mb-3 d-none">
+                <label for="id" class="form-label">ID</label>
+                <input type="text" class="form-control" id="id" name="id" value="{{ data['user']['id'] }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="text" class="form-control" id="email" name="email" value="{{ data['user']['email'] }}" disabled>
+            </div>
+
+            <div class="mb-3">
+                <label for="full_name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name" value="{{ data['user']['full_name'] }}">
+            </div>
+
+            <div class="mb-3">
+                <label for="is_superadmin" class="form-label">Is Admin</label>
+                <div>
+                    <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="is_superadmin" 
+                        name="is_superadmin" 
+                        value="{{ data['user']['is_superadmin'] }}"
+                        {% if data['user']['is_superadmin'] %}checked{% endif %}
+                    >
                 </div>
+            </div>
 
-                <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="text" class="form-control" id="email" name="email" value="{{ data['email'] }}">
+            <div class="mb-3">
+                <label for="is_blocked" class="form-label">Is Blocked</label>
+                <div>
+                    <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="is_blocked" 
+                        name="is_blocked" 
+                        value="{{ data['user'].is_blocked }}"
+                        {% if data['user']['is_blocked'] %}checked{% endif %}
+                    >
                 </div>
+            </div>
+        </div>
+    </div>
 
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="fs-4 mb-3">Portfolios</div>
+
+            {% for portfolio_group in data['portfolios'] %}
+                <div class="fs-5 my-3">{{ portfolio_group['group_name'] }}</div>
                 <div class="mb-3">
-                    <label for="full_name" class="form-label">Name</label>
-                    <input type="text" class="form-control" id="full_name" name="full_name" value="{{ data.full_name }}">
+                    {% for p in portfolio_group['portfolios']|sort(attribute='portfolio') %}
+                        <div class="my-2">
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                value="{{ p['portfolio_id'] }}" 
+                                id="{{ p['portfolio_id'] }}" 
+                                name="portfolios"
+                                {% if p['portfolio_id'] in data['user']['portfolios'] %}checked{% endif %}
+                            >
+                            <label class="form-check-label" for="{{ p['portfolio_id'] }}">{{ p["portfolio"] }}</label>
+                        </div>
+                    {% endfor %}
                 </div>
-
-                <div class="mb-3">
-                    <label for="is_superadmin" class="form-label">Is Admin</label>
-                    <div>
-                        <input class="form-check-input" type="checkbox" id="is_superadmin" name="is_superadmin" value="{{ current_user.full_name }}">
-                    </div>
-                </div>
-
-                <div class="mb-3">
-                    <label for="is_blocked" class="form-label">Is Blocked</label>
-                    <div>
-                        <input class="form-check-input" type="checkbox" id="is_blocked" name="is_blocked" value="{{ current_user.full_name }}">
-                    </div>
-                </div>
-
-                <div class="fs-6">Portfolios</div>
-
-                <div class="mb-3">
-                    <input class="form-check-input" type="checkbox">
-                    <label class="form-check-label" for="">Portfoio Loop</label>
-                </div>
-
-
-                <button type="button" id="changeUserNameButton" class="btn btn-primary form-control mt-3 mb-5">Change Name</button>
-            </form>
-
-            <form id="changePasswordForm" method="post">
-                <div class="mb-3">
-                    <input type="hidden" class="form-control" id="user_id" name="user_id" value="{{ current_user.id }}">
-                </div>
-
-                <div class="mb-3">
-                    <label for="email" class="form-label">New Password</label>
-                    <input type="password" class="form-control" id="password" name="password">
-                </div>
-
-                <div class="mb-3">
-                    <label for="email" class="form-label">Confirm Password</label>
-                    <input type="password" class="form-control" id="password_confirm" name="password_confirm">
-                </div>
-                <button type="button" id="changeUserPasswordButton" class="btn btn-primary form-control mt-3 mb-5">Change Password</button>
-            </form>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <button type="submit" id="changeUserData" class="btn btn-primary form-control mt-3 mb-5">Save</button>
         </div>
     </div>
 </div>
+</form>
+
 
 {% endblock %}
 
 
 {% block scripts %}
 <script>
-
-const changeUserName = async function(data) {
-    const url = "{{ url_for('api.change_user_name', _external=True) }}"
-
-    const options = {
-        method: 'POST',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    }
-
-    result = await fetch(url, options)
-    return result
-}
-
-const changeUserPassword = async function(data) {
-    console.log(data)
-
-    const url = "{{ url_for('api.change_user_password', _external=True) }}"
-
-    const options = {
-        method: 'POST',
-        headers: {
-            'content-type': 'application/json'
-        },
-        body: JSON.stringify(data)
-    }
-
-    result = await fetch(url, options)
-    return result
-}
-
-
-document.getElementById("changeUserNameButton").addEventListener('click', async function() {
-    // submit form date and return new employee id
-    const form = document.getElementById('changeNameForm')
-    const formData = new FormData(form)
-
-    const data = {}
-    formData.forEach((value, key) => {
-        data[key] = value
-    })
-
-    const response = await changeUserName(data)
-
-    if (!response.ok) {
-        error = await response.json()
-        notifyError(error.message)
-        return
-    }
-
-    else {
-        result = await response.json()
-        notifySuccess(result.message)
-    }
-
+document.getElementById('is_superadmin').addEventListener('change', function() {
+    this.value = this.checked ? 'True' : 'False'
 })
 
-document.getElementById("changeUserPasswordButton").addEventListener('click', async function() {
-    // submit form date and return new employee id
-    const form = document.getElementById('changePasswordForm')
-    const formData = new FormData(form)
-
-    const data = {}
-    formData.forEach((value, key) => {
-        data[key] = value
-    })
-
-    const response = await changeUserPassword(data)
-
-    if (!response.ok) {
-        error = await response.json()
-        notifyError(error.message)
-        return
-    }
-
-    else {
-        result = await response.json()
-        notifySuccess(result.message)
-    }
-
+document.getElementById('is_blocked').addEventListener('change', function() {
+    this.value = this.checked ? 'True' : 'False'
 })
-
-
 </script>
 
 

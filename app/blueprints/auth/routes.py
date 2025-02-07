@@ -144,21 +144,131 @@ def user_manage():
 @superadmin_required()
 def user_edit():
     if request.method == 'POST':
-        pass
+        id = request.form.get("id")
+        print('----------------------- id ----------------------')
+        print(id)
+        full_name = request.form.get("full_name")
+        is_superadmin = 1 if request.form.get("is_superadmin") else 0
+        is_blocked = 1 if request.form.get("is_blocked") else 0
+        portfolios = request.form.getlist("portfolios")
+        
+        print('------------------- post data ------------------')
+        print(full_name, is_superadmin, is_blocked, portfolios)
+        
+        sql = """
+            UPDATE auth_user
+            SET full_name = :full_name,
+                is_superadmin = :is_superadmin,
+                is_blocked = :is_blocked
+            WHERE id = :id        
+        """
+        
+        params = {
+            'full_name': full_name,
+            'is_superadmin': is_superadmin,
+            'is_blocked': is_blocked,
+            'id': id
+        }
+        
+        print('----------------- params ---------------------')
+        print(params)
+
+        db.session.execute(text(sql), params)
+        db.session.commit()
+        
+        if len(portfolios) > 0:
+            sql = """
+                INSERT INTO auth_user_portfolio (user_id, portfolio_id) VALUES
+            """
+            #     SELECT
+            #         user_id,
+            #         portfolio_id
+            #     FROM auth_user_portfolio
+            #     WHERE user_id = :user_id AND portfolio_id NOT IN :portfolios
+            # """
+            
+            values = ', '.join([f'({id}, {p})' for p in portfolios])
+            sql = sql + values
+            
+            # print('------------------sql------------------')
+            # print(sql)
+            
+            # params = {
+            #     'user_id': id,
+            #     'portfolios': tuple(portfolios)
+            # }
+            
+            db.session.execute(text(sql))
+            db.session.commit()
+        
+        return redirect(url_for('auth.user_manage'))
+        
     
     userid = request.args.get('userid')
     
+    sql = '''
+        SELECT
+            JSON_OBJECT(
+                'id', u.id,
+                'email', u.email,
+                'full_name', u.full_name,
+                'is_superadmin', u.is_superadmin,
+                'is_blocked', u.is_blocked,
+                'portfolios', (
+                    SELECT JSON_ARRAYAGG(portfolio_id)
+                    FROM auth_user_portfolio up
+                    WHERE up.user_id = u.id
+                )
+            ) AS user
+        FROM auth_user u
+        WHERE u.id = :id
+    '''
+    result = db.session.execute(text(sql), {'id': userid}).fetchone()
+    user_data = json.loads(result[0])
     
-    data = User.query.filter_by(id=userid).one()
+    # user_data = User.query.filter_by(id=userid).one()
     
-    print('-----------------user--------------------')
-    # print(user)
-    print(data.is_superadmin)
-    print(data.is_blocked)
+    print('--------------------------- user data ----------------------------------')
+    print(user_data)
     
     # user_schema = AuthUserSchema()
     # data = user_schema.dumps(user)
     
+    sql = '''
+        SELECT
+            JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'group_id', pg.id,
+                    'group_name', pg.group_name,
+                    'portfolios', (
+                        SELECT JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'portfolio_id', p.id,
+                                'portfolio', p.portfolio
+                            )
+                            
+                        )
+                        FROM hr_employee_portfolio p
+                        WHERE p.group_id = pg.id
+                    )
+                )
+            ) AS portfolios
+        FROM hr_employee_portfolio_group pg
+    '''
+    
+    result = db.session.execute(text(sql)).fetchone()
+    
+    portfolio_data = json.loads(result[0])
+    
+    data = {
+        'user': user_data,
+        'portfolios': portfolio_data
+    }
+    
+    print('---------------------------data--------------------')
+    # print(user_data.is_superadmin)
+    # print(user_data.portfolios)
+    # print(user_data['is_superadmin'])
     print(data)
     
     return render_template('auth/user_edit.html', data=data)
