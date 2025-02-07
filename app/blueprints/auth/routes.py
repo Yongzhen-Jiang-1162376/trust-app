@@ -37,7 +37,7 @@ def login():
 
 
 @bp.route('/register', methods=('GET', 'POST'))
-@superadmin_required
+@superadmin_required()
 def register():
     if request.method == 'POST':
         name = request.form.get('name')
