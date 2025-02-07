@@ -145,16 +145,12 @@ def user_manage():
 def user_edit():
     if request.method == 'POST':
         id = request.form.get("id")
-        print('----------------------- id ----------------------')
-        print(id)
         full_name = request.form.get("full_name")
         is_superadmin = 1 if request.form.get("is_superadmin") else 0
         is_blocked = 1 if request.form.get("is_blocked") else 0
         portfolios = request.form.getlist("portfolios")
-        
-        print('------------------- post data ------------------')
-        print(full_name, is_superadmin, is_blocked, portfolios)
-        
+
+        # update user profile information
         sql = """
             UPDATE auth_user
             SET full_name = :full_name,
@@ -170,12 +166,18 @@ def user_edit():
             'id': id
         }
         
-        print('----------------- params ---------------------')
-        print(params)
-
         db.session.execute(text(sql), params)
         db.session.commit()
         
+        # delete user existing portfolios (fist delete then insert)
+        sql = """
+            DELETE FROM auth_user_portfolio WHERE user_id = :user_id
+        """
+        
+        db.session.execute(text(sql), {'user_id': id})
+        db.session.commit()
+        
+        # insert new portfolios for this users
         if len(portfolios) > 0:
             sql = """
                 INSERT INTO auth_user_portfolio (user_id, portfolio_id) VALUES
@@ -225,6 +227,11 @@ def user_edit():
     '''
     result = db.session.execute(text(sql), {'id': userid}).fetchone()
     user_data = json.loads(result[0])
+    
+    if user_data.get('portfolios') is None:
+        user_data.update({
+            'portfolios': []
+        })
     
     # user_data = User.query.filter_by(id=userid).one()
     
