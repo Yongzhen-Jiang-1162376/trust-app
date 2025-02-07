@@ -33,6 +33,8 @@ def login():
 
         if not user or not check_password_hash(user.password, password):
             error = 'Incorrect email or password'
+        elif user.is_blocked:
+            error = 'Account is blocked. Please contact admin.'
         else:
             login_user(user, remember=remember)
             return redirect(url_for('main.index'))
