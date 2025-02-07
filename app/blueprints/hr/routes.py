@@ -7,7 +7,7 @@ from app.extensions import db
 from marshmallow import EXCLUDE
 from marshmallow.exceptions import ValidationError
 from pprint import pprint
-from flask_login import login_required
+from flask_login import login_required, current_user
 import os
 import pyexcel as pe
 
@@ -15,6 +15,8 @@ import pyexcel as pe
 @bp.route('/employees', methods=('GET',))
 @login_required
 def employee_list():
+    
+    id = current_user.id
     
     columns = [
         {
@@ -118,42 +120,93 @@ def employee_list():
             'name': 'Comments'
         }
     ]
-
-    sql = '''
-        SELECT
-            e.id,
-            e.full_name,
-            e.gender,
-            e.position,
-            GROUP_CONCAT(ep.portfolio ORDER BY ep.id SEPARATOR ', ') AS portfolio_assigned_names,
-            GROUP_CONCAT(ep.id ORDER BY ep.id SEPARATOR ', ') AS portfolio_assigned,
-            e.manager_name,
-            e.employee_type,
-            e.mode_of_work,
-            e.date_of_birth,
-            e.nationality,
-            e.email,
-            e.contact_detail,
-            e.address,
-            e.start_date,
-            e.resignation_date,
-            e.last_working_date,
-            e.trial_period,
-            e.trial_period_start_date,
-            e.hours_per_week,
-            e.volunteer_current_status,
-            REPLACE(e.feedback_performance_review, '\\n', '\\\\n') AS feedback_performance_review,
-            e.leave_reason,
-            e.comments
-        FROM hr_employee e
-        LEFT JOIN hr_employee_portfolio_assigned epa ON e.id = epa.employee_id
-        LEFT JOIN hr_employee_portfolio ep ON epa.portfolio_id = ep.id
-        GROUP BY e.id
-        ORDER BY e.id
-    '''
     
-    result = db.session.execute(text(sql)).fetchall()
-
+    
+    sql = None
+    result = None
+    
+    if current_user.is_superadmin:
+        sql = '''
+            SELECT
+                e.id,
+                e.full_name,
+                e.gender,
+                e.position,
+                GROUP_CONCAT(ep.portfolio ORDER BY ep.id SEPARATOR ', ') AS portfolio_assigned_names,
+                GROUP_CONCAT(ep.id ORDER BY ep.id SEPARATOR ', ') AS portfolio_assigned,
+                e.manager_name,
+                e.employee_type,
+                e.mode_of_work,
+                e.date_of_birth,
+                e.nationality,
+                e.email,
+                e.contact_detail,
+                e.address,
+                e.start_date,
+                e.resignation_date,
+                e.last_working_date,
+                e.trial_period,
+                e.trial_period_start_date,
+                e.hours_per_week,
+                e.volunteer_current_status,
+                REPLACE(e.feedback_performance_review, '\\n', '\\\\n') AS feedback_performance_review,
+                e.leave_reason,
+                e.comments
+            FROM hr_employee e
+            LEFT JOIN hr_employee_portfolio_assigned epa ON e.id = epa.employee_id
+            LEFT JOIN hr_employee_portfolio ep ON epa.portfolio_id = ep.id
+            GROUP BY e.id
+            ORDER BY e.id
+        '''
+        result = db.session.execute(text(sql)).fetchall()
+    else:
+        sql = """
+            SELECT
+                e.id,
+                e.full_name,
+                e.gender,
+                e.position,
+                GROUP_CONCAT(ep.portfolio ORDER BY ep.id SEPARATOR ', ') AS portfolio_assigned_names,
+                GROUP_CONCAT(ep.id ORDER BY ep.id SEPARATOR ', ') AS portfolio_assigned,
+                e.manager_name,
+                e.employee_type,
+                e.mode_of_work,
+                e.date_of_birth,
+                e.nationality,
+                e.email,
+                e.contact_detail,
+                e.address,
+                e.start_date,
+                e.resignation_date,
+                e.last_working_date,
+                e.trial_period,
+                e.trial_period_start_date,
+                e.hours_per_week,
+                e.volunteer_current_status,
+                REPLACE(e.feedback_performance_review, '\\n', '\\\\n') AS feedback_performance_review,
+                e.leave_reason,
+                e.comments
+            FROM hr_employee e
+            LEFT JOIN hr_employee_portfolio_assigned epa ON e.id = epa.employee_id
+            LEFT JOIN hr_employee_portfolio ep ON epa.portfolio_id = ep.id
+            WHERE e.id IN (
+                SELECT
+                    DISTINCT employee_id
+                FROM hr_employee_portfolio_assigned
+                WHERE portfolio_id IN (
+                    SELECT
+                        up.portfolio_id
+                    FROM auth_user u
+                    INNER JOIN auth_user_portfolio up ON u.id = up.user_id
+                    WHERE id = :id	
+                )
+            )
+            GROUP BY e.id
+            ORDER BY e.id
+            ;
+        """
+        result = db.session.execute(text(sql), {'id': id}).fetchall()
+    
     employee_schema = EmployeeSchema(many=True)
 
     # serialize to json string
