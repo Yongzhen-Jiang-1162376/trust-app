@@ -250,6 +250,121 @@ def user_edit():
     return render_template('auth/user_edit.html', data=data)
 
 
+@bp.route('/user-add', methods=['GET', 'POST'])
+@login_required
+@superadmin_required()
+def user_add():
+    error = None
+    if request.method == 'POST':
+        email = request.form.get('email')
+        full_name = request.form.get('full_name')
+        is_superadmin = 1 if request.form.get('is_superadmin') else 0
+        is_blocked = 1 if request.form.get('is_blocked') else 0
+        password = request.form.get('password')
+        portfolios = request.form.getlist('portfolios')
+        
+        print('------------------ form data -------------------------')
+        print(email)
+        print(full_name)
+        print(is_superadmin)
+        print(is_blocked)
+        print(password)
+        print(portfolios)
+
+        user = User.query.filter_by(email=email).first()
+
+        if not user:
+            sql = '''
+                INSERT INTO auth_user
+                (
+                    email,
+                    password,
+                    full_name,
+                    is_superadmin,
+                    is_blocked,
+                    created_at
+                )
+                VALUES
+                (
+                    :email,
+                    :password,
+                    :full_name,
+                    :is_superadmin,
+                    :is_blocked,
+                    now()
+                )
+            '''
+
+            params = {
+                'email': email,
+                'password': generate_password_hash(password),
+                'full_name': full_name,
+                'is_superadmin': is_superadmin,
+                'is_blocked': is_blocked
+            }
+
+            result = db.session.execute(text(sql), params)
+            db.session.commit()
+            
+            # get the id for the last inserted auth_user
+            user_id = result.lastrowid
+            
+            # insert into portfolios
+            if len(portfolios) > 0:
+                sql = """
+                    INSERT INTO auth_user_portfolio (user_id, portfolio_id) VALUES
+                """
+                #     SELECT
+                #         user_id,
+                #         portfolio_id
+                #     FROM auth_user_portfolio
+                #     WHERE user_id = :user_id AND portfolio_id NOT IN :portfolios
+                # """
+                
+                values = ', '.join([f'({user_id}, {p})' for p in portfolios])
+                sql = sql + values
+                
+                db.session.execute(text(sql))
+                db.session.commit()
+            return redirect(url_for('auth.user_manage'))
+
+        else:
+            error = 'This email addres already existed'
+    
+    
+    sql = '''
+        SELECT
+            JSON_ARRAYAGG(
+                JSON_OBJECT(
+                    'group_id', pg.id,
+                    'group_name', pg.group_name,
+                    'portfolios', (
+                        SELECT JSON_ARRAYAGG(
+                            JSON_OBJECT(
+                                'portfolio_id', p.id,
+                                'portfolio', p.portfolio
+                            )
+                            
+                        )
+                        FROM hr_employee_portfolio p
+                        WHERE p.group_id = pg.id
+                    )
+                )
+            ) AS portfolios
+        FROM hr_employee_portfolio_group pg
+    '''
+    
+    result = db.session.execute(text(sql)).fetchone()
+    
+    portfolio_data = json.loads(result[0])
+    
+    data = {
+        'portfolios': portfolio_data
+    }
+    
+    return render_template('auth/user_add.html', data=data, error=error)
+
+
 @bp.route('/change-user-password', methods=('GET', 'POST'))
 def change_user_password():
     error = None

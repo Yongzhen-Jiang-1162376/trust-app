@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 
 {% block content %}
-<div class="d-flex justify-content-start">
+<div class="d-flex justify-content-start mb-4">
     <!-- <a 
         type="button" 
         class="btn btn-outline-primary btn-sm me-5 pt-2" 
@@ -10,7 +10,9 @@
     >Back</a> -->
     <h3>User Management</h3>
 </div>
-
+<div>
+    <a class="btn btn-success btn-sm mb-1" href="{{url_for('auth.user_add')}}" style="width: 150px;">Add new user</a>
+</div>
 <div id="users_table" style="border: 1px solid gray;"></div>
 
 {% endblock %}

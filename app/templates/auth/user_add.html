@@ -1,0 +1,109 @@
+{% extends 'layout.html' %}
+
+{% block content %}
+<div class="d-flex justify-content-start">
+    <!-- <a 
+        type="button" 
+        class="btn btn-outline-primary btn-sm me-5 pt-2" 
+        style="width: 80px;"
+        href="{{ url_for('hr.employee_list') }}"
+    >Back</a> -->
+    <h3>Add new user</h3>
+</div>
+
+<form method="post">
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="text" class="form-control" id="email" name="email" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="full_name" class="form-label">Name</label>
+                <input type="text" class="form-control" id="full_name" name="full_name">
+            </div>
+
+            <div class="mb-3">
+                <label for="password" class="form-label">Password</label>
+                <input type="password" class="form-control" id="password" name="password" required>
+            </div>
+
+            <div class="mb-3">
+                <label for="is_superadmin" class="form-label">Is Admin</label>
+                <div>
+                    <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="is_superadmin" 
+                        name="is_superadmin" 
+                        value="False"
+                    >
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="is_blocked" class="form-label">Is Blocked</label>
+                <div>
+                    <input 
+                        class="form-check-input" 
+                        type="checkbox" 
+                        id="is_blocked" 
+                        name="is_blocked"
+                        value="False"
+                    >
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <div class="fs-4 mb-3">Portfolios</div>
+
+            {% for portfolio_group in data['portfolios'] %}
+                <div class="fs-5 my-3">{{ portfolio_group['group_name'] }}</div>
+                <div class="mb-3">
+                    {% for p in portfolio_group['portfolios']|sort(attribute='portfolio') %}
+                        <div class="my-2">
+                            <input 
+                                class="form-check-input" 
+                                type="checkbox" 
+                                value="{{ p['portfolio_id'] }}" 
+                                id="{{ p['portfolio_id'] }}" 
+                                name="portfolios"
+                            >
+                            <label class="form-check-label" for="{{ p['portfolio_id'] }}">{{ p["portfolio"] }}</label>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-lg-6 col-md-12">
+            <button type="submit" id="addUserData" class="btn btn-primary form-control mt-3 mb-5">Save</button>
+        </div>
+    </div>
+</div>
+</form>
+
+
+{% endblock %}
+
+
+{% block scripts %}
+<script>
+document.getElementById('is_superadmin').addEventListener('change', function() {
+    this.value = this.checked ? 'True' : 'False'
+})
+
+document.getElementById('is_blocked').addEventListener('change', function() {
+    this.value = this.checked ? 'True' : 'False'
+})
+</script>
+
+
+{% endblock %}
