@@ -80,10 +80,11 @@ const usersTable = new Tabulator("#users_table", {
     columns:[ //Define Table Columns
         {title:"No.", field:"row_num", width:80, formatter:rowNumberFormatter},
         {title:"Internal Id", field:"id", width:80, visible: false},
-        {title:"Full Name", field:"full_name"},
+        {title:"Full Name", field:"full_name", width:300},
         {title:"Email", field:"email"},
         {
             title: "Admin", 
+            width: 130,
             field: "is_superadmin",
             formatter: "tickCross",
             editor: false,
@@ -91,6 +92,7 @@ const usersTable = new Tabulator("#users_table", {
         },
         {
             title: "Blocked", 
+            width: 130,
             field: "is_blocked",
             formatter: "tickCross",
             editor: false,
