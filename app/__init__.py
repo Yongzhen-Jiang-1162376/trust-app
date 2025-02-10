@@ -53,6 +53,6 @@ def create_app(test_config=None):
     
 
     logging.basicConfig()
-    logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+    logging.getLogger('sqlalchemy.engine').setLevel(logging.ERROR)
 
     return app
