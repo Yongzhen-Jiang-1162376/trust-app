@@ -38,6 +38,10 @@ const notifyWarning = function (message) {
 }
 
 const nzDateToISODate = function(dateString) {
+    if (!dateString) {
+        return null;
+    }
+
     const DateTime = luxon.DateTime
     const nzDate = DateTime.fromFormat(dateString, "dd/MMM/yyyy")
     // return nzDate.toISODate()

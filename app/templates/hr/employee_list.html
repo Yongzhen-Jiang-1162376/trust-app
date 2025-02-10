@@ -408,6 +408,7 @@ const exportEmployeeData = function() {
 
 
 flatpickr(".datepicker", {
+    defaultDate: null,
     dateFormat: "d/M/Y", // Set New Zealand date format
     allowInput: false, // Allow manual input
     onChange: function (selectedDates, dateStr, instance) {
@@ -448,16 +449,16 @@ const populateEditForm = function(rowData) {
   document.getElementById('manager_name').value = rowData.manager_name
   document.getElementById('employee_type').value = rowData.employee_type
   document.getElementById('mode_of_work').value = rowData.mode_of_work
-  flatpickr('#date_of_birth', {dateFormat: 'd/M/Y'}).setDate(new Date(rowData.date_of_birth))
+  flatpickr('#date_of_birth', {dateFormat: 'd/M/Y'}).setDate(rowData.date_of_birth ? new Date(rowData.date_of_birth) : '')
   document.getElementById('nationality').value = rowData.nationality
   document.getElementById('email').value = rowData.email
   document.getElementById('contact_detail').value = rowData.contact_detail
   document.getElementById('address').value = rowData.address
-  flatpickr('#start_date', {dateFormat: 'd/M/Y'}).setDate(new Date(rowData.start_date))
-  flatpickr('#resignation_date', {dateFormat: 'd/M/Y'}).setDate(new Date(rowData.resignation_date))
-  flatpickr('#last_working_date', {dateFormat: 'd/M/Y'}).setDate(new Date(rowData.last_working_date))
+  flatpickr('#start_date', {dateFormat: 'd/M/Y'}).setDate(rowData.start_date ? new Date(rowData.start_date) : null)
+  flatpickr('#resignation_date', {dateFormat: 'd/M/Y'}).setDate(rowData.resignation_date ? new Date(rowData.resignation_date) : null)
+  flatpickr('#last_working_date', {dateFormat: 'd/M/Y'}).setDate(rowData.last_working_date ? new Date(rowData.last_working_date) : null)
   document.getElementById('trial_period').value = rowData.trial_period
-  flatpickr('#trial_period_start_date', {dateFormat: 'd/M/Y'}).setDate(new Date(rowData.trial_period_start_date))
+  flatpickr('#trial_period_start_date', {dateFormat: 'd/M/Y'}).setDate(rowData.trial_period_start_date ? new Date(rowData.trial_period_start_date) : null)
   document.getElementById('hours_per_week').value = rowData.hours_per_week
   document.getElementById('volunteer_current_status').value = rowData.volunteer_current_status
   document.getElementById('feedback_performance_review').value = rowData.feedback_performance_review

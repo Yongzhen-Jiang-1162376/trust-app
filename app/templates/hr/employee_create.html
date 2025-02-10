@@ -207,6 +207,8 @@ document.getElementById("submitButton").addEventListener('click', async function
     const form = document.getElementById('createForm')
     const formData = new FormData(form)
 
+    console.log(formData)
+
     const date_fields = ['start_date', 'trial_period_start_date', 'date_of_birth', 'resignation_date', 'last_working_date']
     const float_fields = ['hours_per_week', 'trial_period']
 
@@ -216,10 +218,10 @@ document.getElementById("submitButton").addEventListener('click', async function
             data['employee_id'] = value
         }
         else if (date_fields.includes(key)) {
-            data[key] = (data[key] == '' | data[key] == undefined) ? null : nzDateToISODate(value)
+            data[key] = (value == '' | value == undefined) ? null : nzDateToISODate(value)
         }
         else if (float_fields.includes(key)) {
-            data[key] = (data[key] == '' | data[key] == undefined) ? null : data[key]
+            data[key] = (value == '' | value == undefined) ? null : value
         } 
         else {
             data[key] = value
@@ -232,6 +234,8 @@ document.getElementById("submitButton").addEventListener('click', async function
     }
 
     data['portfolio_assigned'] = $('#portfolio_assigned').val()
+
+    console.log(data)
 
     const response = await createEmployeeProfile(data)
 
